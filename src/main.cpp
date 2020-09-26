@@ -1,12 +1,10 @@
-#include <cxxopts.hpp>
-#include <iostream>
+#include "InputSettings.hpp"
+#include <fmt/core.h>
+#include <spdlog/spdlog.h>
 
 int main(int argc, const char* argv[])
 {
-    cxxopts::Options options("MyProgram", "One line description of MyProgram");
-    options.add_options()("d,debug", "Enable debugging");
-
-    auto result = options.parse(argc, argv);
-    bool debug = result["debug"].as<bool>();
-    std::cout << debug << "\n";
+    [[maybe_unused]] auto settings = todo::parse(argc, argv);
+    spdlog::info("Welcome to spdlog!");
+    fmt::print("{}\n", "hej");
 }

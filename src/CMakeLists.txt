@@ -1,6 +1,6 @@
 target_sources(
-    main 
+    todo 
         PRIVATE 
         "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/input_parser.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/InputSettings.cpp"
 )
