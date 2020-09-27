@@ -3,6 +3,8 @@
 #include <doctest.h>
 #include <fmt/core.h>
 #include <fstream>
+#include <functional>
+#include <string>
 
 struct Record
 {
@@ -14,6 +16,13 @@ struct Record
         archive(a);
     }
 };
+
+TEST_CASE("hashing")
+{
+    int i = 1337;
+    auto hashed = std::hash<std::string>{}(std::to_string(i));
+    REQUIRE(i != hashed);
+}
 
 TEST_CASE("serialization with cereal")
 {
@@ -31,6 +40,5 @@ TEST_CASE("serialization with cereal")
         cereal::BinaryInputArchive iarchive(s);
         iarchive(data);
         REQUIRE(data.find(1) != data.end());
-        fmt::print("{}\n", data[1].a);
     }
 }
