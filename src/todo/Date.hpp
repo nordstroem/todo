@@ -6,12 +6,13 @@ namespace todo {
 class Date
 {
 public:
-    Date(std::string_view date);
+    explicit Date(std::string_view date);
 
-public:
-    static Date now();
-    static Date tomorrow();
+    // @return
+    size_t ticks() const noexcept;
 
 private:
+    size_t _representation = 0;
 };
+
 } // namespace todo

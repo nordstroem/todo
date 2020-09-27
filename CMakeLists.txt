@@ -24,6 +24,8 @@ target_include_directories(todolib PUBLIC "third_party/cxxopts/include")
 target_include_directories(todolib PUBLIC "third_party/spdlog/include")
 target_include_directories(todolib PUBLIC "third_party/fmt/include")
 target_include_directories(todolib PUBLIC "third_party/cereal/include")
+target_include_directories(todolib PUBLIC "src")
+
 if (TODO_USE_PCH)
     target_precompile_headers(todolib PUBLIC "pch.hpp")
 endif()

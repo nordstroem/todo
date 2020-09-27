@@ -1,14 +1,23 @@
 #pragma once
 #include "Date.hpp"
-#include <queue>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 namespace todo {
 
+struct Task
+{
+    std::string task;
+    int priority = 0;
+
+    bool operator<(const Task& other) const { return this->priority < other.priority; }
+};
+
 class Database
 {
+
 public:
     /// Constructs an empty database
     Database() = default;
@@ -18,15 +27,20 @@ public:
      */
     Database(std::string_view file);
     /**
-     * Adds a task to the database
+     * 
      * @param task 
      * @param date 
-     * @param priority 
      */
-    void add(std::string_view task, Date date, int priority);
+    void add(Task&& task, Date date);
+    /**
+     * 
+     * @param date 
+     * @return 
+     */
+    std::vector<Task> at(Date date) const;
 
 private:
-    std::unordered_map<int, std::priority_queue<std::string>> _tasks;
+    std::unordered_map<int, std::vector<Task>> _tasks;
 };
 
 } // namespace todo
