@@ -2,7 +2,8 @@
 
 namespace todo {
 
-struct InputSettings {
+struct InputSettings
+{
     bool a = false;
     bool b = false;
     bool c = false;
@@ -13,8 +14,8 @@ struct InputSettings {
  * @param argc the number of arguments
  * @param argv the arguments
  * @return the input settings
- * @note this function exists the program if --help is an argument
+ * @note this function exits the program if --help is an argument
  */
 InputSettings parse(int argc, const char* argv[]);
 
-}
+} // namespace todo

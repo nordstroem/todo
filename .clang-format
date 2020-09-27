@@ -1,0 +1,50 @@
+Language: Cpp
+Standard: Cpp11
+ColumnLimit: 0
+IndentWidth: 4
+AccessModifierOffset: -4
+AlignAfterOpenBracket: DontAlign
+ContinuationIndentWidth: 8
+IndentCaseLabels: true
+IndentPPDirectives: None
+Cpp11BracedListStyle: true
+KeepEmptyLinesAtTheStartOfBlocks: true
+FixNamespaceComments: true
+AlignTrailingComments: true
+MaxEmptyLinesToKeep: 1
+BreakBeforeBraces: Custom
+
+BraceWrapping:
+  AfterNamespace: false
+  AfterClass: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterControlStatement: false
+  SplitEmptyFunction: false
+
+AllowShortFunctionsOnASingleLine: All
+AlwaysBreakTemplateDeclarations: Yes
+BreakConstructorInitializers: BeforeComma
+
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInSquareBrackets: false
+
+PointerAlignment: Left
+
+#IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex: '^"(catch)'
+    Priority: 0
+  - Regex: '^"*"'
+    Priority: 1
+  - Regex: '<.*>'
+    Priority: 100
+...
