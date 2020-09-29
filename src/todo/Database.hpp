@@ -11,7 +11,6 @@ struct Task
 {
     std::string task;
     int priority = 0;
-
     bool operator<(const Task& other) const { return this->priority < other.priority; }
 };
 
