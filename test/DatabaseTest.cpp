@@ -1,8 +1,6 @@
 #include "Database.hpp"
-#include <cereal/archives/binary.hpp>
 #include <doctest.h>
-#include <fmt/core.h>
-#include <sstream>
+#include <filesystem>
 
 using namespace todo;
 
@@ -11,29 +9,32 @@ TEST_CASE("add and at")
     const Date date = {.year = 2020, .month = 1, .day = 1};
     Database database;
     database.add({.task = "sample task", .priority = 1}, date);
-    for (const auto& [task, priority] : database.at(date)) {
-        REQUIRE(task == "sample task");
-        REQUIRE(priority == 1);
-    }
+
+    auto tasks = database.at(date);
+    REQUIRE(tasks.size() == 1);
+
+    const auto& [task, priority] = tasks[0];
+    REQUIRE(task == "sample task");
+    REQUIRE(priority == 1);
 }
 
-TEST_CASE("serialize")
+TEST_CASE("input file")
 {
-    const Date date = {.year = 2020, .month = 1, .day = 1};
-    Database serializedDatabase;
-    std::stringstream s;
+    auto path = std::filesystem::temp_directory_path().append("database.bin");
+    if (std::filesystem::exists(path))
+        std::filesystem::remove(path);
+
+    const Date date = {.year = 2022, .month = 3, .day = 4};
     {
-        Database database;
-        database.add({.task = "sample task", .priority = 2}, date);
-        cereal::BinaryOutputArchive oarchive(s);
-        oarchive(database);
+        Database database(path.c_str());
+        database.add({.task = "test task"}, date);
     }
-    {
-        cereal::BinaryInputArchive iarchive(s);
-        iarchive(serializedDatabase);
-    }
-    for (const auto& [task, priority] : serializedDatabase.at(date)) {
-        REQUIRE(task == "sample task");
-        REQUIRE(priority == 2);
-    }
+    auto database = Database(path.c_str());
+
+    auto tasks = database.at(date);
+    REQUIRE(tasks.size() == 1);
+
+    const auto& [task, priority] = tasks[0];
+    REQUIRE(task == "test task");
+    REQUIRE(priority == 0);
 }

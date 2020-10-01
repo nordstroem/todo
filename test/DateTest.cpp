@@ -1,6 +1,5 @@
 #include "Date.hpp"
 #include <doctest.h>
-#include <fmt/core.h>
 
 using namespace todo;
 

@@ -21,7 +21,7 @@ public:
     template <class Archive>
     void serialize(Archive& archive)
     {
-        archive(year, month, day);
+        archive(this->year, this->month, this->day);
     }
 };
 
