@@ -1,18 +1,33 @@
 #pragma once
-#include <string>
+#include <functional>
 
 namespace todo {
 
-/// Class representing a specific day in time (year-month-day)
-class Date
+struct Date
 {
-public:
-    explicit Date(const std::string& date);
-    int days() const noexcept;
-    std::string toString() const noexcept;
+    int year = 0;
+    int month = 0;
+    int day = 0;
 
-private:
-    int _days = 0;
+    size_t hash() const noexcept;
+    bool operator==(const Date& other) const;
+
+    template <class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(year, month, day);
+    }
 };
 
 } // namespace todo
+
+namespace std {
+template <>
+struct hash<todo::Date>
+{
+    std::size_t operator()(const todo::Date& date) const noexcept
+    {
+        return std::hash<int>{}(date.hash());
+    }
+};
+} // namespace std

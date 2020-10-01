@@ -1,24 +1,13 @@
 #pragma once
-#include <cereal/archives/binary.hpp>
+#include "Date.hpp"
 #include <cereal/types/string.hpp>
 #include <cereal/types/unordered_map.hpp>
-#include <date/date.h>
+#include <cereal/types/vector.hpp>
 #include <functional>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
-
-namespace std {
-template <>
-struct hash<date::year_month_day>
-{
-    std::size_t operator()(const date::year_month_day& date) const noexcept
-    {
-        return std::hash<int>{}(date::sys_days{date}.time_since_epoch().count());
-    }
-};
-} // namespace std
 
 namespace todo {
 
@@ -40,6 +29,8 @@ class Database
 public:
     /// Constructs an empty database
     Database() = default;
+    /// Destructs the database, and updates the linked database file
+    ~Database();
     /**
      * Constructs a database that is linked to a database file
      * @param file the path to the database file 
@@ -50,23 +41,24 @@ public:
      * @param task task to add
      * @param date date to be added
      */
-    void add(Task&& task, const date::year_month_day& date);
+    void add(Task&& task, const Date& date);
     /**
      * Returns all tasks at a specific date
      * @param date the date
      * @return the tasks
      */
-    std::vector<Task> at(const date::year_month_day& date) const;
+    std::vector<Task> at(const Date& date) const;
 
 public:
     template <class Archive>
     void serialize(Archive& archive)
     {
-        archive(this->_tasks);
+        archive(_tasks);
     }
 
 private:
-    std::unordered_map<date::year_month_day, std::vector<Task>> _tasks;
+    std::unordered_map<Date, std::vector<Task>> _tasks;
+    std::string _file;
 };
 
 } // namespace todo

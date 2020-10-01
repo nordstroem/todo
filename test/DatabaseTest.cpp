@@ -1,4 +1,5 @@
 #include "todo/Database.hpp"
+#include <cereal/archives/binary.hpp>
 #include <doctest.h>
 #include <fmt/core.h>
 #include <sstream>
@@ -7,7 +8,7 @@ using namespace todo;
 
 TEST_CASE("add and at")
 {
-    const auto date = date::year{2020} / 1 / 1;
+    const Date date = {.year = 2020, .month = 1, .day = 1};
     Database database;
     database.add({.task = "sample task", .priority = 1}, date);
     for (const auto& [task, priority] : database.at(date)) {
@@ -18,9 +19,9 @@ TEST_CASE("add and at")
 
 TEST_CASE("serialize")
 {
-    /*std::stringstream s;
-    const auto date = date::year{2020} / 2 / 2;
+    const Date date = {.year = 2020, .month = 1, .day = 1};
     Database serializedDatabase;
+    std::stringstream s;
     {
         Database database;
         database.add({.task = "sample task", .priority = 2}, date);
@@ -33,7 +34,6 @@ TEST_CASE("serialize")
     }
     for (const auto& [task, priority] : serializedDatabase.at(date)) {
         REQUIRE(task == "sample task");
-        REQUIRE(priority == 1);
+        REQUIRE(priority == 2);
     }
-    */
 }
