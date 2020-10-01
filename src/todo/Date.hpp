@@ -1,5 +1,5 @@
 #pragma once
-#include <string_view>
+#include <string>
 
 namespace todo {
 
@@ -7,11 +7,12 @@ namespace todo {
 class Date
 {
 public:
-    explicit Date(std::string_view date);
-    int daysSinceEpoch() const noexcept;
+    explicit Date(const std::string& date);
+    int days() const noexcept;
+    std::string toString() const noexcept;
 
 private:
-    int _daysSinceEpoch = 0;
+    int _days = 0;
 };
 
 } // namespace todo
