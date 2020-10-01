@@ -15,6 +15,11 @@ std::string Date::toString() const
     return fmt::format("{}-{}-{}", this->year, this->month, this->day);
 }
 
+bool Date::valid() const
+{
+    return date::year_month_day(date::year{this->year} / month / day).ok();
+}
+
 bool Date::operator==(const Date& other) const
 {
     return this->year == other.year && this->month == other.month && this->day == other.day;
