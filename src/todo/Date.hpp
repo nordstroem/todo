@@ -16,7 +16,7 @@ public:
 public:
     /// @return string representation of the date in the format yyyy-mm-dd
     std::string toString() const;
-    // @return whether this is valid date in the Gregorian calendar
+    /// @return whether this is a valid date in the Gregorian calendar
     bool valid() const;
     /// @return hash of this date
     size_t hash() const noexcept;
