@@ -7,6 +7,10 @@ Database::Database(std::string_view file)
 {
 }
 
+Database::~Database()
+{
+}
+
 void Database::add(Task&& task, const Date& date)
 {
     this->_tasks[date].push_back(std::move(task));

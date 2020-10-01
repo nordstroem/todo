@@ -15,6 +15,8 @@ struct Task
 {
     std::string task;
     int priority = 0;
+
+public:
     bool operator<(const Task& other) const { return this->priority < other.priority; }
 
     template <class Archive>
