@@ -22,12 +22,6 @@ public:
     size_t hash() const noexcept;
 
     bool operator==(const Date& other) const;
-
-    template <class Archive>
-    void serialize(Archive& archive)
-    {
-        archive(this->year, this->month, this->day);
-    }
 };
 
 } // namespace todo

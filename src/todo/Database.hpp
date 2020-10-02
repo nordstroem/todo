@@ -13,7 +13,7 @@ struct Task
     int priority = 0;
 
 public:
-    bool operator<(const Task& other) const { return this->priority < other.priority; }
+    bool operator>(const Task& other) const { return this->priority > other.priority; }
 };
 
 class Database
@@ -23,6 +23,11 @@ public:
     Database() = default;
     /// Destructs the database, and updates the linked database file
     ~Database();
+
+    // Do not allow copying
+    Database(const Database& other) = delete;
+    Database& operator=(const Database& other) = delete;
+
     /**
      * Constructs a database that is linked to a binary database file
      * @param file the path to the database file 
@@ -38,6 +43,7 @@ public:
      * Returns all tasks at a specific date
      * @param date the date
      * @return the tasks
+     * @remark this vector is sorted from highest to lowest task priority
      */
     std::vector<Task> at(const Date& date) const;
 

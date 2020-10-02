@@ -1,9 +1,11 @@
 #include "Database.hpp"
+#include <algorithm>
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/string.hpp>
 #include <cereal/types/unordered_map.hpp>
 #include <cereal/types/vector.hpp>
 #include <fstream>
+#include <functional>
 #include <spdlog/spdlog.h>
 
 namespace todo {
@@ -12,6 +14,12 @@ template <class Archive>
 void serialize(Archive& archive, Task& task)
 {
     archive(task.task, task.priority);
+}
+
+template <class Archive>
+void serialize(Archive& archive, Date& date)
+{
+    archive(date.year, date.month, date.day);
 }
 
 static auto load(const std::string& file)
@@ -53,8 +61,11 @@ void Database::add(Task&& task, const Date& date)
 
 std::vector<Task> Database::at(const Date& date) const
 {
-    if (auto task = this->_tasks.find(date); task != this->_tasks.end())
-        return task->second;
+    if (auto tasksAtDate = this->_tasks.find(date); tasksAtDate != this->_tasks.end()) {
+        auto tasks = tasksAtDate->second;
+        std::sort(tasks.begin(), tasks.end(), std::greater<Task>());
+        return tasks;
+    }
     return {};
 }
 
