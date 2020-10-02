@@ -1,24 +1,32 @@
 #include "InputSettings.hpp"
 #include <cxxopts.hpp>
-#include <fmt/core.h>
 
 namespace todo {
 
 InputSettings parse(int argc, const char* argv[])
 {
     cxxopts::Options options("todo", "todo");
-    options.add_options()             //
-            ("h,help", "Print usage") //
-            ("d,delete", "kek");      //
+    options.add_options()                                                                     //
+            ("h,help", "Print usage")                                                         //
+            ("a,add", "Task to add", cxxopts::value<std::string>())                           //
+            ("p,priority", "Priority of the task", cxxopts::value<int>()->default_value("0")) //
+            ("d,date", "Date to add or query", cxxopts::value<std::string>());                //
 
     auto result = options.parse(argc, argv);
 
+    InputSettings input;
     if (result.count("help")) {
-        fmt::print("{}\n", options.help());
-        exit(0);
+        input.message = options.help();
+        return input;
     }
 
-    return {.a = false, .b = true, .c = false};
+    if (result.count("add"))
+        input.task = {.task = result["add"].as<std::string>(), .priority = result["priority"].as<int>()};
+
+    if (result.count("date"))
+        input.date = Date::fromString(result["date"].as<std::string>());
+
+    return input;
 }
 
 } // namespace todo

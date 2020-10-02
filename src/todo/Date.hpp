@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <string>
+#include <string_view>
 
 namespace todo {
 
@@ -11,7 +12,10 @@ struct Date
     unsigned day = 0;
 
 public:
+    /// @return todays date
     static Date today();
+    /// @return date from a string in the format yyyy-mm-dd
+    static Date fromString(const std::string& string);
 
 public:
     /// @return string representation of the date in the format yyyy-mm-dd

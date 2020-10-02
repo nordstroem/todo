@@ -1,5 +1,6 @@
 #pragma once
 #include "Date.hpp"
+#include "Task.hpp"
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -7,32 +8,21 @@
 
 namespace todo {
 
-struct Task
-{
-    std::string task;
-    int priority = 0;
-
-public:
-    bool operator>(const Task& other) const { return this->priority > other.priority; }
-};
-
 class Database
 {
 public:
     /// Constructs an empty database
     Database() = default;
-    /// Destructs the database, and updates the linked database file
-    ~Database();
-
-    // Do not allow copying
-    Database(const Database& other) = delete;
-    Database& operator=(const Database& other) = delete;
-
     /**
      * Constructs a database that is linked to a binary database file
      * @param file the path to the database file 
      */
     Database(const std::string& file);
+    /// Destructs the database, and updates the linked database file
+    ~Database();
+    // Do not allow copying
+    Database(const Database& other) = delete;
+    Database& operator=(const Database& other) = delete;
     /**
      * Adds a task to do at a specific date to the database
      * @param task task to add

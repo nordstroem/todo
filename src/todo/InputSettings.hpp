@@ -1,12 +1,18 @@
 #pragma once
+#include "Date.hpp"
+#include "Task.hpp"
+#include <optional>
+#include <string>
+#include <utility>
 
 namespace todo {
 
+// @todo rename
 struct InputSettings
 {
-    bool a = false;
-    bool b = false;
-    bool c = false;
+    std::optional<std::string> message;
+    std::optional<Task> task;
+    std::optional<Date> date;
 };
 
 /**
@@ -14,7 +20,6 @@ struct InputSettings
  * @param argc the number of arguments
  * @param argv the arguments
  * @return the input settings
- * @note this function exits the program if --help is an argument
  */
 InputSettings parse(int argc, const char* argv[]);
 
