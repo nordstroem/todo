@@ -1,6 +1,7 @@
 #pragma once
 #include "Date.hpp"
 #include "Task.hpp"
+#include <array>
 #include <optional>
 #include <string>
 
@@ -20,6 +21,6 @@ struct InputSettings
  * @param argv the arguments
  * @return the input settings
  */
-InputSettings parse(int argc, const char* argv[]);
+InputSettings parse(int argc, const char** argv);
 
 } // namespace todo

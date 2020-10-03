@@ -8,7 +8,8 @@ namespace todo {
 
 static bool validDateString(const std::string& string)
 {
-    if (string.length() != 10)
+    constexpr int formatLength = 10;
+    if (string.length() != formatLength)
         return false;
     constexpr auto digitPositions = std::array<int, 8>{0, 1, 2, 3, 5, 6, 8, 9};
     if (std::any_of(digitPositions.begin(), digitPositions.end(), [&](const auto& p) { return !std::isdigit(string.at(p)); }))
@@ -34,9 +35,9 @@ std::optional<Date> Date::fromString(const std::string& string)
         unsigned month = std::stoull(string.substr(5, 2));
         unsigned day = std::stoull(string.substr(8, 2));
         return Date{.year = year, .month = month, .day = day};
-    } else {
-        return std::nullopt;
     }
+
+    return std::nullopt;
 }
 
 std::string Date::toString() const
@@ -46,7 +47,7 @@ std::string Date::toString() const
 
 bool Date::valid() const
 {
-    return date::year_month_day(date::year{this->year} / month / day).ok();
+    return date::year_month_day(date::year{this->year}, date::month{month}, date::day{day}).ok();
 }
 
 bool Date::operator==(const Date& other) const
@@ -56,7 +57,7 @@ bool Date::operator==(const Date& other) const
 
 size_t Date::hash() const noexcept
 {
-    return std::hash<int>{}(date::sys_days{date::year{this->year} / this->month / this->day}.time_since_epoch().count());
+    return std::hash<int>{}(date::sys_days{date::year_month_day(date::year{this->year}, date::month{month}, date::day{day})}.time_since_epoch().count());
 }
 
 } // namespace todo

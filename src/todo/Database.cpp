@@ -41,16 +41,20 @@ Database::Database(const std::string& file)
 {
 }
 
-Database::~Database()
+Database::~Database() noexcept
 {
-    if (this->_file) {
-        std::ofstream ostream(*this->_file, std::ios::binary);
-        if (ostream.good()) {
-            cereal::BinaryOutputArchive oarchive(ostream);
-            oarchive(this->_tasks);
-        } else {
-            spdlog::error("{} could not be written to", *this->_file);
+    try {
+        if (this->_file) {
+            std::ofstream ostream(*this->_file, std::ios::binary);
+            if (ostream.good()) {
+                cereal::BinaryOutputArchive oarchive(ostream);
+                oarchive(this->_tasks);
+            } else {
+                spdlog::error("{} could not be written to", *this->_file);
+            }
         }
+    } catch (const std::exception& e) {
+        spdlog::error("{} could not be written to", *this->_file);
     }
 }
 
@@ -63,7 +67,7 @@ std::vector<Task> Database::at(const Date& date) const
 {
     if (auto tasksAtDate = this->_tasks.find(date); tasksAtDate != this->_tasks.end()) {
         auto tasks = tasksAtDate->second;
-        std::sort(tasks.begin(), tasks.end(), std::greater<Task>());
+        std::sort(tasks.begin(), tasks.end(), std::greater<>());
         return tasks;
     }
     return {};

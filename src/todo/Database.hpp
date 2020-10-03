@@ -19,7 +19,7 @@ public:
      */
     Database(const std::string& file);
     /// Destructs the database, and updates the linked database file
-    ~Database();
+    ~Database() noexcept;
     // Do not allow copying or moving
     Database(const Database& other) = delete;
     Database(Database&& other) = delete;

@@ -4,8 +4,9 @@
 
 namespace todo {
 
-InputSettings parse(int argc, const char* argv[])
+InputSettings parse(int argc, const char** argv)
 {
+
     cxxopts::Options options("todo", "todo");
     options.add_options()                                                                              //
             ("h,help", "Print usage")                                                                  //
@@ -16,12 +17,12 @@ InputSettings parse(int argc, const char* argv[])
     auto result = options.parse(argc, argv);
 
     InputSettings input;
-    if (result.count("help")) {
+    if (result.count("help") != 0) {
         input.message = options.help();
         return input;
     }
 
-    if (result.count("date")) {
+    if (result.count("date") != 0) {
         if (auto date = Date::fromString(result["date"].as<std::string>())) {
             input.date = date;
         } else {
@@ -30,7 +31,7 @@ InputSettings parse(int argc, const char* argv[])
         }
     }
 
-    if (result.count("add"))
+    if (result.count("add") != 0)
         input.task = {.task = result["add"].as<std::string>(), .priority = result["priority"].as<int>()};
 
     return input;
