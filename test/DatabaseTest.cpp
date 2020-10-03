@@ -1,8 +1,8 @@
 #include "Database.hpp"
+#include <algorithm>
 #include <doctest.h>
 #include <filesystem>
 #include <fmt/core.h>
-#include <limits>
 
 using namespace todo;
 
@@ -28,10 +28,8 @@ TEST_CASE("sorted")
     database.add({.task = "high prio", .priority = 10}, date);
     database.add({.task = "medium prio", .priority = 5}, date);
 
-    for (int previousPriority = std::numeric_limits<int>::max(); const auto& [task, priority] : database.at(date)) {
-        REQUIRE(priority < previousPriority);
-        previousPriority = priority;
-    }
+    auto tasks = database.at(date);
+    REQUIRE(std::is_sorted(tasks.begin(), tasks.end(), std::greater<Task>()));
 }
 
 TEST_CASE("input file")

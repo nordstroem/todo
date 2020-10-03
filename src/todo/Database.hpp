@@ -20,9 +20,11 @@ public:
     Database(const std::string& file);
     /// Destructs the database, and updates the linked database file
     ~Database();
-    // Do not allow copying
+    // Do not allow copying or moving
     Database(const Database& other) = delete;
+    Database(Database&& other) = delete;
     Database& operator=(const Database& other) = delete;
+    Database& operator=(Database&& other) = delete;
     /**
      * Adds a task to do at a specific date to the database
      * @param task task to add

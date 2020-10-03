@@ -15,7 +15,7 @@ public:
     /// @return todays date
     static Date today();
     /**
-     * Returns a date from a string in the format yyyy-mm-dd. If the string is ill-formed, nullopt is returned.  
+     * Returns a date from a string in the format yyyy-mm-dd. If the string is ill-formed, nullopt is returned
      * @param string the date as a string 
      * @return the date as an optional
      */

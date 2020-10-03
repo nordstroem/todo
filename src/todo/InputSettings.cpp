@@ -25,7 +25,7 @@ InputSettings parse(int argc, const char* argv[])
         if (auto date = Date::fromString(result["date"].as<std::string>())) {
             input.date = date;
         } else {
-            input.message = fmt::format("Date specificer is ill-formed, it must be the format yyyy-mm-dd or {} \n.", R"("today")");
+            input.message = fmt::format("Date specificer is ill-formed, it must be the format yyyy-mm-dd or {} \n", R"("today")");
             return input;
         }
     }
