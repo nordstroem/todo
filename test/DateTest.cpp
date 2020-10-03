@@ -16,3 +16,10 @@ TEST_CASE("valid")
     Date d2{.year = 2020, .month = 2, .day = 31};
     REQUIRE_FALSE(d2.valid());
 }
+
+TEST_CASE("from string")
+{
+    REQUIRE(Date::fromString("2019-12-30") == Date{.year = 2019, .month = 12, .day = 30});
+    REQUIRE(Date::fromString("today") == Date::today());
+    REQUIRE(Date::fromString("random string") == std::nullopt);
+}

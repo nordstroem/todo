@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
+#include <optional>
 #include <string>
-#include <string_view>
 
 namespace todo {
 
@@ -14,8 +14,12 @@ struct Date
 public:
     /// @return todays date
     static Date today();
-    /// @return date from a string in the format yyyy-mm-dd
-    static Date fromString(const std::string& string);
+    /**
+     * Returns a date from a string in the format yyyy-mm-dd. If the string is ill-formed, nullopt is returned.  
+     * @param string the date as a string 
+     * @return the date as an optional
+     */
+    static std::optional<Date> fromString(const std::string& string);
 
 public:
     /// @return string representation of the date in the format yyyy-mm-dd

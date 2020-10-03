@@ -4,7 +4,7 @@
 
 int main(int argc, const char* argv[])
 {
-    [[maybe_unused]] auto settings = todo::parse(argc, argv);
+    auto settings = todo::parse(argc, argv);
     if (auto str = settings.message) {
         fmt::print("{}", *str);
         exit(0);

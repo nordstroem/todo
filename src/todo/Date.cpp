@@ -10,12 +10,19 @@ Date Date::today()
     return {.year = static_cast<int>(ymd.year()), .month = static_cast<unsigned>(ymd.month()), .day = static_cast<unsigned>(ymd.day())};
 }
 
-Date Date::fromString(const std::string& string)
+std::optional<Date> Date::fromString(const std::string& string)
 {
-    int year = std::stoi(string.substr(0, 4));
-    unsigned month = std::stoull(string.substr(5, 2));
-    unsigned day = std::stoull(string.substr(8, 2));
-    return {.year = year, .month = month, .day = day};
+    if (string == "today")
+        return Date::today();
+
+    try {
+        int year = std::stoi(string.substr(0, 4));
+        unsigned month = std::stoull(string.substr(5, 2));
+        unsigned day = std::stoull(string.substr(8, 2));
+        return Date{.year = year, .month = month, .day = day};
+    } catch (const std::exception& e) {
+        return std::nullopt;
+    }
 }
 
 std::string Date::toString() const
