@@ -1,5 +1,6 @@
 #include "DatabaseCommandVisitor.hpp"
 #include <algorithm>
+#include <fmt/color.h>
 #include <fmt/core.h>
 
 namespace todo {
@@ -19,8 +20,10 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
     const auto& tasks = this->_database.at(cmd.date);
     if (tasks.size() > 0) {
         auto maxLength = std::max_element(tasks.begin(), tasks.end(), [](const auto& a, const auto& b) { return a.description.length() < b.description.length(); })->description.size();
-        for (const auto& task : tasks)
-            fmt::print("{:<{}} [{}] {} {:x}\n", task.description, maxLength + 5, task.priority, task.done, task.hash);
+        for (const auto& task : tasks) {
+            auto checked = task.done ? fmt::format(fg(fmt::color::green), "V") : fmt::format(" ");
+            fmt::print("{:<{}} [{}] {} {:x}\n", task.description, maxLength + 5, checked, task.priority, task.hash);
+        }
     } else {
         fmt::print("Nothing to do {}\n", cmd.date == Date::today() ? "today" : "at this date");
     }
