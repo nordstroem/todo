@@ -10,8 +10,8 @@ DatabaseCommand parse(int argc, const char** argv)
     options.add_options()                                                                              //
             ("h,help", "Print usage")                                                                  //
             ("a,add", "Task to add", cxxopts::value<std::string>())                                    //
-            ("p,priority", "Priority of the task", cxxopts::value<int>()->default_value("0"))          //
-            ("s,show", "Show task at a specific date")                                                 //
+            ("p,priority", "Priority of added task", cxxopts::value<int>()->default_value("0"))        //
+            ("s,show", "Show tasks at a specific date")                                                //
             ("d,date", "Date to add or query", cxxopts::value<std::string>()->default_value("today")); //
 
     auto result = options.parse(argc, argv);

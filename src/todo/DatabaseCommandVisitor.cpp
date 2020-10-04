@@ -1,7 +1,9 @@
 #include "DatabaseCommandVisitor.hpp"
+#include <algorithm>
 #include <fmt/core.h>
 
 namespace todo {
+
 DatabaseCommandVisitor::DatabaseCommandVisitor(const std::string& databasePath)
     : _database(Database(databasePath))
 {
@@ -12,10 +14,14 @@ void DatabaseCommandVisitor::operator()(ShowMessage&& cmd) const
     fmt::print("{}", cmd.message);
 }
 
-void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowTasks&& cmd) const
+void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 {
-    for (const auto& task : this->_database.at(cmd.date))
-        fmt::print("{} [{}]\n", task.task, task.priority);
+    const auto& tasks = this->_database.at(cmd.date);
+    if (tasks.size() > 0) {
+        auto maxLength = std::max_element(tasks.begin(), tasks.end(), [](const Task& a, const Task& b) { return a.task.length() < b.task.length(); })->task.size();
+        for (const auto& [task, priority] : tasks)
+            fmt::print("{:<{}} [{}]\n", task, maxLength + 5, priority);
+    }
 }
 
 void DatabaseCommandVisitor::operator()(AddTask&& cmd)
