@@ -15,9 +15,9 @@ TEST_CASE("add and at")
     auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
 
-    const auto& [task, priority] = tasks.at(0).task;
-    REQUIRE(task == "sample task");
-    REQUIRE(priority == 1);
+    const auto& task = tasks.at(0);
+    REQUIRE(task.description == "sample task");
+    REQUIRE(task.priority == 1);
 }
 
 TEST_CASE("sorted")
@@ -55,7 +55,7 @@ TEST_CASE("input file")
     auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
 
-    const auto& [description, priority] = tasks.at(0).task;
-    REQUIRE(description == "test task");
-    REQUIRE(priority == 0);
+    const auto& task = tasks.at(0);
+    REQUIRE(task.description == "test task");
+    REQUIRE(task.priority == 0);
 }

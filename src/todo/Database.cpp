@@ -13,7 +13,7 @@ namespace todo {
 template <class Archive>
 void serialize(Archive& archive, HashedTask& hashedTask)
 {
-    archive(hashedTask.task.description, hashedTask.task.priority, hashedTask.hash);
+    archive(hashedTask.description, hashedTask.priority, hashedTask.hash);
 }
 
 template <class Archive>
@@ -65,7 +65,7 @@ void Database::add(Task&& task, const Date& date)
         for (const auto& task : tasks)
             largestHash = std::max(largestHash, task.hash);
 
-    this->_tasks[date].push_back({.task = std::move(task), .hash = largestHash + 1});
+    this->_tasks[date].emplace_back(std::move(task), largestHash + 1);
 }
 
 std::vector<HashedTask> Database::at(const Date& date) const

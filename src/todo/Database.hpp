@@ -8,15 +8,6 @@
 
 namespace todo {
 
-struct HashedTask
-{
-    Task task;
-    uint32_t hash;
-
-public:
-    bool operator>(const HashedTask& other) const { return this->task > other.task; }
-};
-
 class Database
 {
 public:
