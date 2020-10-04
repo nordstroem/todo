@@ -10,7 +10,7 @@ TEST_CASE("add and at")
 {
     const Date date = {.year = 2020, .month = 1, .day = 1};
     Database database;
-    database.add({.task = "sample task", .priority = 1}, date);
+    database.add({.description = "sample task", .priority = 1}, date);
 
     auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
@@ -24,12 +24,19 @@ TEST_CASE("sorted")
 {
     const Date date = {.year = 2020, .month = 1, .day = 1};
     Database database;
-    database.add({.task = "low prio", .priority = 1}, date);
-    database.add({.task = "high prio", .priority = 10}, date);
-    database.add({.task = "medium prio", .priority = 5}, date);
+    database.add({.description = "low prio", .priority = 1}, date);
+    database.add({.description = "high prio", .priority = 10}, date);
+    database.add({.description = "medium prio", .priority = 5}, date);
 
     auto tasks = database.at(date);
     REQUIRE(std::is_sorted(tasks.begin(), tasks.end(), std::greater<Task>()));
+}
+
+TEST_CASE("check task")
+{
+    const Date date = {.year = 2020, .month = 1, .day = 1};
+    Database database;
+    database.add({.description = "some task", .priority = 1}, date);
 }
 
 TEST_CASE("input file")
@@ -41,14 +48,14 @@ TEST_CASE("input file")
     const Date date = {.year = 2022, .month = 3, .day = 4};
     {
         Database database(path.c_str());
-        database.add({.task = "test task"}, date);
+        database.add({.description = "test task"}, date);
     }
     auto database = Database(path.c_str());
 
     auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
 
-    const auto& [task, priority] = tasks.at(0);
-    REQUIRE(task == "test task");
+    const auto& [description, priority] = tasks.at(0);
+    REQUIRE(description == "test task");
     REQUIRE(priority == 0);
 }

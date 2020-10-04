@@ -22,7 +22,7 @@ DatabaseCommand parse(int argc, const char** argv)
         Date date = Date::fromString(result["date"].as<std::string>());
 
         if (result.count("add") != 0) {
-            Task task = Task{.task = result["add"].as<std::string>(), .priority = result["priority"].as<int>()};
+            Task task = Task{.description = result["add"].as<std::string>(), .priority = result["priority"].as<int>()};
             return AddTask{.task = std::move(task), .date = date};
         }
 

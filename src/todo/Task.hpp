@@ -5,7 +5,7 @@ namespace todo {
 
 struct Task
 {
-    std::string task;
+    std::string description;
     int priority = 0;
 
 public:

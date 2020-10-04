@@ -25,7 +25,7 @@ TEST_CASE("add task")
     auto command = todo::parse(args.size(), &args[0]);
     REQUIRE(std::holds_alternative<AddTask>(command));
     auto [task, date] = std::get<AddTask>(command);
-    REQUIRE(task.task == "do something");
+    REQUIRE(task.description == "do something");
     REQUIRE(date == Date{.year = 2020, .month = 10, .day = 1});
 }
 
@@ -39,5 +39,5 @@ TEST_CASE("apply add task command")
     const auto& database = visitor.database();
     const auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
-    REQUIRE(tasks.at(0).task == "task to do");
+    REQUIRE(tasks.at(0).description == "task to do");
 }

@@ -13,7 +13,7 @@ namespace todo {
 template <class Archive>
 void serialize(Archive& archive, Task& task)
 {
-    archive(task.task, task.priority);
+    archive(task.description, task.priority);
 }
 
 template <class Archive>
