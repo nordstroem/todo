@@ -31,6 +31,11 @@ void DatabaseCommandVisitor::operator()(AddTask&& cmd)
     this->_database.add(std::move(cmd.task), cmd.date);
 }
 
+void DatabaseCommandVisitor::operator()(RemoveTask&& cmd)
+{
+    this->_database.remove(cmd.hash);
+}
+
 void DatabaseCommandVisitor::operator()([[maybe_unused]] DoNothing&& cmd) const
 {
 }

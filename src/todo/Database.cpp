@@ -68,6 +68,13 @@ void Database::add(Task&& task, const Date& date)
     this->_tasks[date].emplace_back(std::move(task), largestHash + 1);
 }
 
+void Database::remove(uint32_t hash)
+{
+    for (auto& [date, tasks] : this->_tasks)
+        if (auto task = std::find_if(tasks.begin(), tasks.end(), [hash](const auto& t) { return t.hash == hash; }); task != tasks.end())
+            tasks.erase(task);
+}
+
 std::vector<HashedTask> Database::at(const Date& date) const
 {
     if (auto tasksAtDate = this->_tasks.find(date); tasksAtDate != this->_tasks.end()) {

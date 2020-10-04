@@ -10,10 +10,11 @@ namespace todo {
 struct AddTask { Task task; Date date; };
 struct ShowMessage { std::string message; };
 struct ShowTasks { Date date; };
+struct RemoveTask { uint32_t hash; };
 struct DoNothing { };
 // clang-format on
 
-using DatabaseCommand = std::variant<AddTask, ShowMessage, ShowTasks, DoNothing>;
+using DatabaseCommand = std::variant<AddTask, ShowMessage, ShowTasks, RemoveTask, DoNothing>;
 
 DatabaseCommand parse(int argc, const char** argv);
 

@@ -29,6 +29,15 @@ TEST_CASE("add task")
     REQUIRE(date == Date{.year = 2020, .month = 10, .day = 1});
 }
 
+TEST_CASE("remove task")
+{
+    std::vector<const char*> args = {{"todo", "--remove", "1"}};
+    auto command = todo::parse(args.size(), &args[0]);
+    REQUIRE(std::holds_alternative<RemoveTask>(command));
+    auto [hash] = std::get<RemoveTask>(command);
+    REQUIRE(hash == 1);
+}
+
 TEST_CASE("apply add task command")
 {
     const auto date = Date::fromString("2012-12-12");

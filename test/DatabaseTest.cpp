@@ -32,11 +32,16 @@ TEST_CASE("sorted")
     REQUIRE(std::is_sorted(tasks.begin(), tasks.end(), std::greater<>()));
 }
 
-TEST_CASE("check task")
+TEST_CASE("remove task")
 {
-    const Date date = {.year = 2020, .month = 1, .day = 1};
+    const Date date = {.year = 2020, .month = 2, .day = 2};
     Database database;
     database.add({.description = "some task", .priority = 1}, date);
+    database.add({.description = "some other task", .priority = 2}, date);
+    database.remove(database.at(date).at(0).hash);
+    auto tasks = database.at(date);
+    REQUIRE(tasks.size() == 1);
+    REQUIRE(tasks.at(0).description == "some task");
 }
 
 TEST_CASE("input file")
