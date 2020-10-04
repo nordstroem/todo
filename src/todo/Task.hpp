@@ -14,6 +14,9 @@ public:
 
 struct HashedTask : public Task
 {
+    uint32_t hash = 0;
+    bool done = false;
+
 public:
     HashedTask() noexcept = default;
     HashedTask(Task&& task, uint32_t hash) noexcept
@@ -22,10 +25,6 @@ public:
         this->priority = task.priority;
         this->hash = hash;
     }
-
-public:
-    uint32_t hash = 0;
-    bool done = false;
 };
 
 } // namespace todo
