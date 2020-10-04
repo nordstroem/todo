@@ -14,6 +14,8 @@ void DatabaseCommandVisitor::operator()(ShowMessage&& cmd) const
 
 void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowTasks&& cmd) const
 {
+    for (const auto& task : this->_database.at(cmd.date))
+        fmt::print("{} [{}]\n", task.task, task.priority);
 }
 
 void DatabaseCommandVisitor::operator()(AddTask&& cmd)

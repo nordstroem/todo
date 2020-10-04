@@ -12,6 +12,13 @@ TEST_CASE("help message")
     REQUIRE(std::get<ShowMessage>(command).message.size() > 0);
 }
 
+TEST_CASE("show task")
+{
+    std::vector<const char*> args = {"todo", "--show"};
+    auto command = todo::parse(args.size(), &args[0]);
+    REQUIRE(std::holds_alternative<ShowTasks>(command));
+}
+
 TEST_CASE("add task")
 {
     std::vector<const char*> args = {{"todo", "--add", "do something", "--date", "2020-10-01"}};

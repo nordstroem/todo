@@ -9,11 +9,7 @@ using namespace todo;
 
 int main(int argc, const char* argv[])
 {
-    const auto command = todo::parse(argc, argv);
-
-    //todo::Command c = todo::ShowMessage{"HejKek!\n"};
-    //std::visit(DatabaseCommandVisitor{}, std::move(c));
-
     const auto path = std::getenv("TODO_DATABASE_PATH");
-    spdlog::info("{}\n", path);
+    auto command = todo::parse(argc, argv);
+    std::visit(DatabaseCommandVisitor{path}, std::move(command));
 }
