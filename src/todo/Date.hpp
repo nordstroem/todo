@@ -14,6 +14,8 @@ struct Date
 public:
     /// @return todays date
     static Date today();
+    /// @return tomorrows date
+    static Date tomorrow();
     /**
      * Returns a date from a string in the format yyyy-mm-dd. If the string is ill-formed, std::invalid_argument is thrown
      * @param string the date as a string 

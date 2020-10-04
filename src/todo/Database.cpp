@@ -60,7 +60,12 @@ Database::~Database()
 
 void Database::add(Task&& task, const Date& date)
 {
-    this->_tasks[date].push_back({.task = std::move(task), .hash = 0});
+    uint32_t largestHash = 0;
+    for (const auto& [date, tasks] : this->_tasks)
+        for (const auto& task : tasks)
+            largestHash = std::max(largestHash, task.hash);
+
+    this->_tasks[date].push_back({.task = std::move(task), .hash = largestHash + 1});
 }
 
 std::vector<HashedTask> Database::at(const Date& date) const

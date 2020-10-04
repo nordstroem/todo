@@ -29,7 +29,7 @@ TEST_CASE("sorted")
     database.add({.description = "medium prio", .priority = 5}, date);
 
     auto tasks = database.at(date);
-    REQUIRE(std::is_sorted(tasks.begin(), tasks.end(), std::greater<HashedTask>()));
+    REQUIRE(std::is_sorted(tasks.begin(), tasks.end(), std::greater<>()));
 }
 
 TEST_CASE("check task")

@@ -26,10 +26,19 @@ Date Date::today()
     return {.year = static_cast<int>(ymd.year()), .month = static_cast<unsigned>(ymd.month()), .day = static_cast<unsigned>(ymd.day())};
 }
 
+Date Date::tomorrow()
+{
+    auto ymd = date::year_month_day{date::floor<date::days>(std::chrono::system_clock::now()) + date::days(1)};
+    return {.year = static_cast<int>(ymd.year()), .month = static_cast<unsigned>(ymd.month()), .day = static_cast<unsigned>(ymd.day())};
+}
+
 Date Date::fromString(const std::string& string) noexcept(false)
 {
     if (string == "today")
         return Date::today();
+
+    if (string == "tomorrow")
+        return Date::tomorrow();
 
     if (validDateString(string)) {
         int year = std::stoi(string.substr(0, 4));
@@ -37,7 +46,7 @@ Date Date::fromString(const std::string& string) noexcept(false)
         unsigned day = std::stoull(string.substr(8, 2));
         return Date{.year = year, .month = month, .day = day};
     }
-    throw std::invalid_argument(fmt::format("Date specificer is ill-formed, it must be the format yyyy-mm-dd or {} \n", R"("today")"));
+    throw std::invalid_argument(fmt::format("Date specificer is ill-formed, it must be the format yyyy-mm-dd, {} or {}\n", R"("today")", R"("tomorrow")"));
 }
 
 std::string Date::toString() const
