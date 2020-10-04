@@ -24,7 +24,8 @@ public:
     }
 
 public:
-    uint32_t hash;
+    uint32_t hash = 0;
+    bool done = false;
 };
 
 } // namespace todo

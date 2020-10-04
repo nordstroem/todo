@@ -32,10 +32,15 @@ public:
      */
     void add(Task&& task, const Date& date);
     /**
-     * Removes a task with a specific task from the database
+     * Removes a task with a specific hash from the database
      * @param hash hash of the task
      */
     void remove(uint32_t hash);
+    /**
+     * Checks a task (toggles done/not done) with a specific hash from the database
+     * @param hash hash of the task
+     */
+    void check(uint32_t hash);
     /**
      * Returns all tasks at a specific date
      * @param date the date

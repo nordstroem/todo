@@ -12,6 +12,7 @@ DatabaseCommand parse(int argc, const char** argv)
             ("a,add", "Task to add", cxxopts::value<std::string>())                                    //
             ("p,priority", "Priority of added task", cxxopts::value<int>()->default_value("0"))        //
             ("r,remove", "Hash of task to remove", cxxopts::value<uint32_t>())                         //
+            ("c,check", "Check a task with a specific hash", cxxopts::value<uint32_t>())               //
             ("s,show", "Show tasks at a specific date")                                                //
             ("d,date", "Date to add or query", cxxopts::value<std::string>()->default_value("today")); //
 
@@ -29,6 +30,9 @@ DatabaseCommand parse(int argc, const char** argv)
 
         if (result.count("remove") != 0)
             return RemoveTask{.hash = result["remove"].as<std::uint32_t>()};
+
+        if (result.count("check") != 0)
+            return CheckTask{.hash = result["check"].as<std::uint32_t>()};
 
         if (result.count("show") != 0)
             return ShowTasks{.date = date};

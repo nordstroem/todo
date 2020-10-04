@@ -13,7 +13,7 @@ namespace todo {
 template <class Archive>
 void serialize(Archive& archive, HashedTask& hashedTask)
 {
-    archive(hashedTask.description, hashedTask.priority, hashedTask.hash);
+    archive(hashedTask.description, hashedTask.priority, hashedTask.hash, hashedTask.done);
 }
 
 template <class Archive>
@@ -73,6 +73,13 @@ void Database::remove(uint32_t hash)
     for (auto& [date, tasks] : this->_tasks)
         if (auto task = std::find_if(tasks.begin(), tasks.end(), [hash](const auto& t) { return t.hash == hash; }); task != tasks.end())
             tasks.erase(task);
+}
+
+void Database::check(uint32_t hash)
+{
+    for (auto& [date, tasks] : this->_tasks)
+        if (auto task = std::find_if(tasks.begin(), tasks.end(), [hash](const auto& t) { return t.hash == hash; }); task != tasks.end())
+            task->done = !task->done;
 }
 
 std::vector<HashedTask> Database::at(const Date& date) const

@@ -44,6 +44,19 @@ TEST_CASE("remove task")
     REQUIRE(tasks.at(0).description == "some task");
 }
 
+TEST_CASE("check task")
+{
+    const Date date = {.year = 2020, .month = 2, .day = 2};
+    Database database;
+    database.add({.description = "some task", .priority = 1}, date);
+    database.add({.description = "some other task", .priority = 2}, date);
+    database.check(database.at(date).at(0).hash);
+    auto tasks = database.at(date);
+    REQUIRE(tasks.at(0).description == "some other task");
+    REQUIRE(tasks.at(0).done);
+    REQUIRE_FALSE(tasks.at(1).done);
+}
+
 TEST_CASE("input file")
 {
     auto path = std::filesystem::temp_directory_path().append("database.bin");

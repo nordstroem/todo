@@ -38,6 +38,15 @@ TEST_CASE("remove task")
     REQUIRE(hash == 1);
 }
 
+TEST_CASE("check task")
+{
+    std::vector<const char*> args = {{"todo", "--check", "1"}};
+    auto command = todo::parse(args.size(), &args[0]);
+    REQUIRE(std::holds_alternative<CheckTask>(command));
+    auto [hash] = std::get<CheckTask>(command);
+    REQUIRE(hash == 1);
+}
+
 TEST_CASE("apply add task command")
 {
     const auto date = Date::fromString("2012-12-12");
