@@ -11,9 +11,9 @@
 namespace todo {
 
 template <class Archive>
-void serialize(Archive& archive, Task& task)
+void serialize(Archive& archive, HashedTask& hashedTask)
 {
-    archive(task.description, task.priority);
+    archive(hashedTask.task.description, hashedTask.task.priority, hashedTask.hash);
 }
 
 template <class Archive>
@@ -25,7 +25,7 @@ void serialize(Archive& archive, Date& date)
 static auto load(const std::string& file)
 {
     std::ifstream istream(file, std::ios::binary);
-    std::unordered_map<Date, std::vector<Task>> input;
+    std::unordered_map<Date, std::vector<HashedTask>> input;
     if (istream.good()) {
         cereal::BinaryInputArchive iarchive(istream);
         iarchive(input);
@@ -60,10 +60,10 @@ Database::~Database()
 
 void Database::add(Task&& task, const Date& date)
 {
-    this->_tasks[date].push_back(std::move(task));
+    this->_tasks[date].push_back({.task = std::move(task), .hash = 0});
 }
 
-std::vector<Task> Database::at(const Date& date) const
+std::vector<HashedTask> Database::at(const Date& date) const
 {
     if (auto tasksAtDate = this->_tasks.find(date); tasksAtDate != this->_tasks.end()) {
         auto tasks = tasksAtDate->second;

@@ -8,6 +8,15 @@
 
 namespace todo {
 
+struct HashedTask
+{
+    Task task;
+    uint32_t hash;
+
+public:
+    bool operator>(const HashedTask& other) const { return this->task > other.task; }
+};
+
 class Database
 {
 public:
@@ -37,10 +46,10 @@ public:
      * @return the tasks
      * @remark this vector is sorted from highest to lowest task priority
      */
-    std::vector<Task> at(const Date& date) const;
+    std::vector<HashedTask> at(const Date& date) const;
 
 private:
-    std::unordered_map<Date, std::vector<Task>> _tasks;
+    std::unordered_map<Date, std::vector<HashedTask>> _tasks;
     std::optional<std::string> _file;
 };
 

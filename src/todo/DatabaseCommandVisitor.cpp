@@ -18,9 +18,9 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 {
     const auto& tasks = this->_database.at(cmd.date);
     if (tasks.size() > 0) {
-        auto maxLength = std::max_element(tasks.begin(), tasks.end(), [](const Task& a, const Task& b) { return a.description.length() < b.description.length(); })->description.size();
-        for (const auto& [description, priority] : tasks)
-            fmt::print("{:<{}} [{}]\n", description, maxLength + 5, priority);
+        auto maxLength = std::max_element(tasks.begin(), tasks.end(), [](const auto& a, const auto& b) { return a.task.description.length() < b.task.description.length(); })->task.description.size();
+        for (const auto& [task, hash] : tasks)
+            fmt::print("{:<{}} [{}]\n", task.description, maxLength + 5, task.priority);
     }
 }
 

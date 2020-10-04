@@ -15,7 +15,7 @@ TEST_CASE("add and at")
     auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
 
-    const auto& [task, priority] = tasks.at(0);
+    const auto& [task, priority] = tasks.at(0).task;
     REQUIRE(task == "sample task");
     REQUIRE(priority == 1);
 }
@@ -29,7 +29,7 @@ TEST_CASE("sorted")
     database.add({.description = "medium prio", .priority = 5}, date);
 
     auto tasks = database.at(date);
-    REQUIRE(std::is_sorted(tasks.begin(), tasks.end(), std::greater<Task>()));
+    REQUIRE(std::is_sorted(tasks.begin(), tasks.end(), std::greater<HashedTask>()));
 }
 
 TEST_CASE("check task")
@@ -55,7 +55,7 @@ TEST_CASE("input file")
     auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
 
-    const auto& [description, priority] = tasks.at(0);
+    const auto& [description, priority] = tasks.at(0).task;
     REQUIRE(description == "test task");
     REQUIRE(priority == 0);
 }
