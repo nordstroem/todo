@@ -31,7 +31,7 @@ TEST_CASE("add task")
 
 TEST_CASE("apply add task command")
 {
-    const auto date = *Date::fromString("2012-12-12");
+    const auto date = Date::fromString("2012-12-12");
     DatabaseCommandVisitor visitor;
     DatabaseCommand command = AddTask{.task = {"task to do"}, .date = date};
     std::visit(visitor, std::move(command));

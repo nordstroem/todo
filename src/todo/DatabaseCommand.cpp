@@ -14,22 +14,24 @@ DatabaseCommand parse(int argc, const char** argv)
             ("s,show", "Show tasks at a specific date")                                                //
             ("d,date", "Date to add or query", cxxopts::value<std::string>()->default_value("today")); //
 
-    auto result = options.parse(argc, argv);
+    try {
+        auto result = options.parse(argc, argv);
+        if (result.count("help") != 0)
+            return ShowMessage{.message = options.help()};
 
-    if (result.count("help") != 0)
-        return ShowMessage{.message = options.help()};
+        Date date = Date::fromString(result["date"].as<std::string>());
 
-    auto date = Date::fromString(result["date"].as<std::string>());
-    if (!date.has_value())
-        return ShowMessage{.message = fmt::format("Date specificer is ill-formed, it must be the format yyyy-mm-dd or {} \n", R"("today")")};
+        if (result.count("add") != 0) {
+            Task task = Task{.task = result["add"].as<std::string>(), .priority = result["priority"].as<int>()};
+            return AddTask{.task = std::move(task), .date = date};
+        }
 
-    if (result.count("add") != 0) {
-        Task task = Task{.task = result["add"].as<std::string>(), .priority = result["priority"].as<int>()};
-        return AddTask{.task = std::move(task), .date = *date};
+        if (result.count("show") != 0)
+            return ShowTasks{.date = date};
+
+    } catch (const std::exception& exception) {
+        return ShowMessage{.message = exception.what()};
     }
-
-    if (result.count("show") != 0)
-        return ShowTasks{.date = *date};
 
     return DoNothing{};
 }

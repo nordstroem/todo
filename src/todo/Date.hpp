@@ -15,11 +15,11 @@ public:
     /// @return todays date
     static Date today();
     /**
-     * Returns a date from a string in the format yyyy-mm-dd. If the string is ill-formed, nullopt is returned
+     * Returns a date from a string in the format yyyy-mm-dd. If the string is ill-formed, std::invalid_argument is thrown
      * @param string the date as a string 
      * @return the date as an optional
      */
-    static std::optional<Date> fromString(const std::string& string);
+    static Date fromString(const std::string& string) noexcept(false);
 
 public:
     /// @return string representation of the date in the format yyyy-mm-dd

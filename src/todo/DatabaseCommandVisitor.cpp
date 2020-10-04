@@ -11,7 +11,7 @@ DatabaseCommandVisitor::DatabaseCommandVisitor(const std::string& databasePath)
 
 void DatabaseCommandVisitor::operator()(ShowMessage&& cmd) const
 {
-    fmt::print("{}", cmd.message);
+    fmt::print("{}\n", cmd.message);
 }
 
 void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
