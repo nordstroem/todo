@@ -3,6 +3,7 @@
 #include "Task.hpp"
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -17,7 +18,7 @@ public:
      * Constructs a database that is linked to a binary database file
      * @param file the path to the database file 
      */
-    explicit Database(const std::string& file);
+    explicit Database(std::string_view file);
     /// Destructs the database, and updates the linked database file
     ~Database();
     // Do not allow copying or moving
@@ -50,8 +51,8 @@ public:
     std::vector<HashedTask> at(const Date& date) const;
 
 private:
-    std::unordered_map<Date, std::vector<HashedTask>> _tasks;
     std::optional<std::string> _file;
+    std::unordered_map<Date, std::vector<HashedTask>> _tasks;
 };
 
 } // namespace todo

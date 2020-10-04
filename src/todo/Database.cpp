@@ -35,9 +35,9 @@ static auto load(const std::string& file)
     return input;
 }
 
-Database::Database(const std::string& file)
-    : _tasks(load(file))
-    , _file(file)
+Database::Database(std::string_view file)
+    : _file(file)
+    , _tasks(load(*this->_file))
 {
 }
 

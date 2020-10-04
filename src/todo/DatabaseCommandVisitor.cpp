@@ -4,7 +4,7 @@
 
 namespace todo {
 
-DatabaseCommandVisitor::DatabaseCommandVisitor(const std::string& databasePath)
+DatabaseCommandVisitor::DatabaseCommandVisitor(std::string_view databasePath)
     : _database(Database(databasePath))
 {
 }

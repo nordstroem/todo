@@ -1,7 +1,7 @@
 #pragma once
 #include "Database.hpp"
 #include "DatabaseCommand.hpp"
-#include <string>
+#include <string_view>
 
 namespace todo {
 /**
@@ -11,7 +11,7 @@ class DatabaseCommandVisitor
 {
 public:
     DatabaseCommandVisitor() = default;
-    explicit DatabaseCommandVisitor(const std::string& databasePath);
+    explicit DatabaseCommandVisitor(std::string_view databasePath);
 
 public:
     void operator()(ShowMessage&& cmd) const;
