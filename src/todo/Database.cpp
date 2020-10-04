@@ -41,7 +41,7 @@ Database::Database(const std::string& file)
 {
 }
 
-Database::~Database() noexcept
+Database::~Database()
 {
     try {
         if (this->_file) {

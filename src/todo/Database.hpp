@@ -17,9 +17,9 @@ public:
      * Constructs a database that is linked to a binary database file
      * @param file the path to the database file 
      */
-    Database(const std::string& file);
+    explicit Database(const std::string& file);
     /// Destructs the database, and updates the linked database file
-    ~Database() noexcept;
+    ~Database();
     // Do not allow copying or moving
     Database(const Database& other) = delete;
     Database(Database&& other) = delete;

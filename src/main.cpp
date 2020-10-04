@@ -1,14 +1,19 @@
-#include "InputSettings.hpp"
+#include "Database.hpp"
+#include "DatabaseCommandVisitor.hpp"
+#include <cstdlib>
 #include <fmt/core.h>
 #include <spdlog/spdlog.h>
+#include <string_view>
+
+using namespace todo;
 
 int main(int argc, const char* argv[])
 {
-    auto settings = todo::parse(argc, argv);
-    if (auto str = settings.message) {
-        fmt::print("{}", *str);
-        exit(0);
-    }
-    spdlog::info("Welcome to spdlog!");
-    fmt::print("{}\n", "hej");
+    const auto command = todo::parse(argc, argv);
+
+    //todo::Command c = todo::ShowMessage{"HejKek!\n"};
+    //std::visit(DatabaseCommandVisitor{}, std::move(c));
+
+    const auto path = std::getenv("TODO_DATABASE_PATH");
+    spdlog::info("{}\n", path);
 }
