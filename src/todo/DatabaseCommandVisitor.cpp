@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <fmt/color.h>
 #include <fmt/core.h>
-#include <functional>
 
 namespace {
 template <typename T>
@@ -14,6 +13,10 @@ std::string toString(const T& t)
         return std::to_string(t);
 }
 
+/**
+ * 
+ * @tparam Container 
+ */
 template <typename Container>
 class MaxLengthHelper
 {
@@ -25,11 +28,11 @@ public:
     auto operator()(const Transform& t) const
     {
         auto compare = [&](const auto& a, const auto& b) { return toString(t(a)).length() < toString(t(b)).length(); };
-        return toString(t(*std::max_element(this->_c.begin(), this->_c.end(), compare))).length();
+        return toString(t(*std::max_element(this->_container.begin(), this->_container.end(), compare))).length();
     }
 
 private:
-    const Container& _c;
+    const Container& _container;
 };
 } // namespace
 
@@ -48,29 +51,24 @@ void DatabaseCommandVisitor::operator()(ShowMessage&& cmd) const
 void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 {
     const auto& tasks = this->_database.at(cmd.date);
+    const auto textColor = fg(fmt::color::indian_red);
     if (tasks.size() > 0) {
         MaxLengthHelper maxLength(tasks);
-        auto maxHash = maxLength([](const auto& e) { return e.hash; });
-        auto maxDescription = maxLength([](const auto& e) { return e.description; });
-        auto maxPriority = maxLength([](const auto& e) { return e.priority; });
+        constexpr std::array<std::string_view, 4> header = {"Hash", "Task", "Priority", "Done"};
+        auto hashPadding = std::max(maxLength([](const auto& e) { return e.hash; }), header[0].length());
+        auto descriptionPadding = std::max(maxLength([](const auto& e) { return e.description; }), header[1].length()) + 2;
+        auto priorityPadding = std::max(maxLength([](const auto& e) { return e.priority; }), header[2].length());
 
-        auto hashString = std::string("Hash");
-        int hashPadding = std::max(maxHash, hashString.length());
-        auto descriptionString = std::string("Task");
-        int descriptionPadding = std::max(maxDescription + 2, descriptionString.length());
-        auto priorityString = std::string("Priority");
-        int priorityPadding = std::max(maxPriority, priorityString.length());
-        auto doneString = std::string("Done");
-
-        fmt::print(fg(fmt::color::indian_red), "To do at {}:\n\n", cmd.date.toString());
-        fmt::print("{:>{}}  {:<{}}  {:<{}}  {}\n", hashString, hashPadding, descriptionString, descriptionPadding, priorityString, priorityPadding, doneString);
+        constexpr auto rowFormat = "{:>{}}  {:<{}}  {:<{}}  {}\n";
+        fmt::print(textColor, "To do at {}:\n\n", cmd.date.toString());
+        fmt::print(rowFormat, header[0], hashPadding, header[1], descriptionPadding, header[2], priorityPadding, header[3]);
         for (const auto& task : tasks) {
-            auto checked = task.done ? fmt::format(fg(fmt::color::green), "V") : fmt::format(" ");
-            fmt::print("{:>{}}  {:<{}}  {:<{}}  [{}]\n", task.hash, hashPadding, fmt::format(R"("{}")", task.description), descriptionPadding, task.priority, priorityPadding, checked);
+            auto checked = task.done ? fmt::format(fg(fmt::color::green), "[V]") : fmt::format("[ ]");
+            fmt::print(rowFormat, task.hash, hashPadding, fmt::format(R"("{}")", task.description), descriptionPadding, task.priority, priorityPadding, checked);
         }
         fmt::print("\n");
     } else {
-        fmt::print(fg(fmt::color::indian_red), "Nothing to do {}\n", cmd.date == Date::today() ? fmt::format("today") : fmt::format("at {}", cmd.date.toString()));
+        fmt::print(textColor, "Nothing to do {}\n", cmd.date == Date::today() ? fmt::format("today") : fmt::format("at {}", cmd.date.toString()));
     }
 }
 
