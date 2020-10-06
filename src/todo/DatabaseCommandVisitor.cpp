@@ -5,8 +5,8 @@
 
 namespace {
 /**
- * 
- * @tparam Container 
+ * Function object for calculating the maximum length of a string representation of the elements in a container
+ * @tparam Container container type
  */
 template <typename Container>
 class MaxLengthHelper
@@ -15,6 +15,11 @@ public:
     explicit MaxLengthHelper(const Container& container)
         : _container(container)
     {}
+    /**
+     * Calculates the maximum string representation length of the elements in the container
+     * @param transform function that returns the string representation of an element 
+     * @return the maximum length
+     */
     template <typename Transform>
     auto operator()(const Transform& transform) const
     {
