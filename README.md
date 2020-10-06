@@ -1,25 +1,44 @@
 # todo
 
-# Planned features:
-Build main library. Link both test and exe with it.
-Backward compatibility for older serialized binaries (built in cereal?)
+A lightweight to-do list manager which runs in the terminal
 
-# Usage:
-todo --add "comment"
-todo --add "comment" "2019-01-02"
-todo --add "comment" tomorrow --priority 1
+## Build requirements
+* C++20 compliant compiler
+* Linux (tested with Ubuntu 20.04.1, but other distributions should work fine)
 
-todo --add "comment" tomorrow --priority 1 --only-today
-todo --addf file.txt
+## Setup
+* `git clone https://github.com/nordstroem/todo.git --recursive`
+* `cd todo`
+* `cmake --S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release`
+* `cmake --build build`
 
-todo "comment"
+An alias for the executable `../todo/build/bin/todo` can, for example, be set to `td` for convenience. 
+## Usage
+* Set the environment variable `TODO_DATABASE_PATH` to be the path of the database file. 
 
-todo --check 2
-todo --check "comment"
+* Adding a task
 
-todo
-todo --list
-todo --list today
-todo --list "2019-01-02"
+    ```
+    td -a "A task to do"                       // Adds a task to-do today 
+    td -a "A task to do" -d 2020-10-07 -p 100  // Adds a task to do at a specific date with a specific priority
+    ```
+    Both date `-d` and priority `-p` are optional, and are defaulted to `today` and `0` respectively.
+*  Show tasks
 
-todo --db database_location.bin
+    ```
+    td -s               // Lists all tasks to-do today
+    td -s -d 2021-01-02 // At a specific date
+    ```
+    
+*  Check a task (toggles done/not done)
+
+    ```
+    td -c 532             // Checks the task with hash 532
+    ```
+
+*  Remove a task
+
+    ```
+    td -r 32             // Removes the task with hash 32
+    ```
+
