@@ -7,9 +7,9 @@ namespace todo {
 
 struct Date
 {
-    int year = 0;
-    unsigned month = 0;
-    unsigned day = 0;
+    int32_t year = 0;
+    uint32_t month = 0;
+    uint32_t day = 0;
 
 public:
     /// @return todays date
