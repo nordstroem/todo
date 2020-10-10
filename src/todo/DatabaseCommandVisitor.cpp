@@ -32,7 +32,11 @@ private:
 };
 } // namespace
 
+using namespace fmt;
+
 namespace todo {
+
+static const auto textColor = fg(color::indian_red);
 
 DatabaseCommandVisitor::DatabaseCommandVisitor(std::string_view databasePath)
     : _database(Database(databasePath))
@@ -41,15 +45,12 @@ DatabaseCommandVisitor::DatabaseCommandVisitor(std::string_view databasePath)
 
 void DatabaseCommandVisitor::operator()(ShowMessage&& cmd) const
 {
-    fmt::print("{}\n", cmd.message);
+    print("{}\n", cmd.message);
 }
 
 void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 {
-    using namespace fmt;
-
     const auto& tasks = this->_database.at(cmd.date);
-    const auto textColor = fg(color::indian_red);
     if (!tasks.empty()) {
         MaxLengthHelper maxLength(tasks);
         constexpr std::array<std::string_view, 4> header = {"Hash", "Task", "Priority", "Done"};
@@ -72,17 +73,25 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 
 void DatabaseCommandVisitor::operator()(AddTask&& cmd)
 {
+    print(textColor, "Added \"{}\" to do at {}\n", cmd.task.description, cmd.date.toString());
     this->_database.add(std::move(cmd.task), cmd.date);
 }
 
 void DatabaseCommandVisitor::operator()(RemoveTask&& cmd)
 {
-    this->_database.remove(cmd.hash);
+    if (auto task = this->_database.get(cmd.hash)) {
+        print(textColor, "Removed task \"{}\"\n", task->description);
+        this->_database.remove(cmd.hash);
+    }
 }
 
 void DatabaseCommandVisitor::operator()(CheckTask&& cmd)
 {
-    this->_database.check(cmd.hash);
+    if (auto task = this->_database.get(cmd.hash)) {
+        auto checkMessage = task->done ? "not done" : "done";
+        print(textColor, "Marked task \"{}\" as {}\n", task->description, checkMessage);
+        this->_database.check(cmd.hash);
+    }
 }
 
 void DatabaseCommandVisitor::operator()([[maybe_unused]] DoNothing&& cmd) const

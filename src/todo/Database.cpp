@@ -82,6 +82,14 @@ void Database::check(uint32_t hash)
             task->done = !task->done;
 }
 
+std::optional<HashedTask> Database::get(uint32_t hash) const
+{
+    for (auto& [date, tasks] : this->_tasks)
+        if (auto task = std::find_if(tasks.begin(), tasks.end(), [hash](const auto& t) { return t.hash == hash; }); task != tasks.end())
+            return *task;
+    return std::nullopt;
+}
+
 std::vector<HashedTask> Database::at(const Date& date) const
 {
     if (auto tasksAtDate = this->_tasks.find(date); tasksAtDate != this->_tasks.end()) {

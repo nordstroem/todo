@@ -57,6 +57,17 @@ TEST_CASE("check task")
     REQUIRE_FALSE(tasks.at(1).done);
 }
 
+TEST_CASE("get task")
+{
+    const Date date = {.year = 2020, .month = 2, .day = 2};
+    Database database;
+    database.add({.description = "some task", .priority = 1}, date);
+    auto tasks = database.at(date);
+
+    REQUIRE(database.get(tasks.at(0).hash)->description == "some task");
+    REQUIRE_FALSE(database.get(42).has_value());
+}
+
 TEST_CASE("input file")
 {
     auto path = std::filesystem::temp_directory_path().append("database.bin");

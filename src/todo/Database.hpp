@@ -43,6 +43,12 @@ public:
      */
     void check(uint32_t hash);
     /**
+     * Returns the task corresponding to a specific hash
+     * @param hash hash of the task
+     * @return the task if it exists, std::nullopt otherwise
+     */
+    std::optional<HashedTask> get(uint32_t hash) const;
+    /**
      * Returns all tasks at a specific date
      * @param date the date
      * @return the tasks
