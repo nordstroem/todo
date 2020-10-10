@@ -16,6 +16,8 @@ public:
     static Date today();
     /// @return tomorrows date
     static Date tomorrow();
+    /// @return yesterdays date
+    static Date yesterday();
     /**
      * Returns a date from a string in the format yyyy-mm-dd. If the string is ill-formed, std::invalid_argument is thrown
      * @param string the date as a string 
