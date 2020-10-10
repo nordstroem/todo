@@ -15,7 +15,7 @@ TEST_CASE("add and at")
     auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
 
-    const auto& task = tasks.at(0);
+    const auto& task = tasks.front();
     REQUIRE(task.description == "sample task");
     REQUIRE(task.priority == 1);
 }
@@ -41,7 +41,7 @@ TEST_CASE("remove task")
     database.remove(database.at(date).at(0).hash);
     auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
-    REQUIRE(tasks.at(0).description == "some task");
+    REQUIRE(tasks.front().description == "some task");
 }
 
 TEST_CASE("check task")
@@ -50,10 +50,10 @@ TEST_CASE("check task")
     Database database;
     database.add({.description = "some task", .priority = 1}, date);
     database.add({.description = "some other task", .priority = 2}, date);
-    database.check(database.at(date).at(0).hash);
+    database.check(database.at(date).front().hash);
     auto tasks = database.at(date);
-    REQUIRE(tasks.at(0).description == "some other task");
-    REQUIRE(tasks.at(0).done);
+    REQUIRE(tasks.front().description == "some other task");
+    REQUIRE(tasks.front().done);
     REQUIRE_FALSE(tasks.at(1).done);
 }
 
@@ -64,7 +64,7 @@ TEST_CASE("get task")
     database.add({.description = "some task", .priority = 1}, date);
     auto tasks = database.at(date);
 
-    REQUIRE(database.get(tasks.at(0).hash)->description == "some task");
+    REQUIRE(database.get(tasks.front().hash)->description == "some task");
     REQUIRE_FALSE(database.get(42).has_value());
 }
 
@@ -96,7 +96,7 @@ TEST_CASE("input file")
     auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
 
-    const auto& task = tasks.at(0);
+    const auto& task = tasks.front();
     REQUIRE(task.description == "test task");
     REQUIRE(task.priority == 0);
 }

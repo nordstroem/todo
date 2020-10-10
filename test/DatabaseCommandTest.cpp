@@ -67,5 +67,5 @@ TEST_CASE("apply add task command")
     const auto& database = visitor.database();
     const auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
-    REQUIRE(tasks.at(0).description == "task to do");
+    REQUIRE(tasks.front().description == "task to do");
 }
