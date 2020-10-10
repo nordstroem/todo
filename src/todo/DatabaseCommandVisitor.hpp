@@ -19,6 +19,7 @@ public:
     void operator()(AddTask&& cmd);
     void operator()(RemoveTask&& cmd);
     void operator()(CheckTask&& cmd);
+    void operator()(MoveTask&& cmd);
     void operator()(DoNothing&& cmd) const;
     const Database& database() const noexcept;
 

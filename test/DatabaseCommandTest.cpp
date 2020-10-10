@@ -47,6 +47,16 @@ TEST_CASE("check task")
     REQUIRE(hash == 1);
 }
 
+TEST_CASE("move task")
+{
+    std::vector<const char*> args = {{"todo", "--move", "1"}};
+    auto command = todo::parse(args.size(), &args[0]);
+    REQUIRE(std::holds_alternative<MoveTask>(command));
+    auto [hash, date] = std::get<MoveTask>(command);
+    REQUIRE(hash == 1);
+    REQUIRE(date == Date::today());
+}
+
 TEST_CASE("apply add task command")
 {
     const auto date = Date::fromString("2012-12-12");

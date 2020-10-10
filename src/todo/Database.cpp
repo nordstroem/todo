@@ -82,9 +82,19 @@ void Database::check(uint32_t hash)
             task->done = !task->done;
 }
 
+void Database::move(uint32_t hash, const Date& date)
+{
+    for (auto& [currentDate, tasks] : this->_tasks)
+        if (auto task = std::find_if(tasks.begin(), tasks.end(), [hash](const auto& t) { return t.hash == hash; }); task != tasks.end()) {
+            this->_tasks[date].push_back(*task);
+            tasks.erase(task);
+            break;
+        }
+}
+
 std::optional<HashedTask> Database::get(uint32_t hash) const
 {
-    for (auto& [date, tasks] : this->_tasks)
+    for (const auto& [date, tasks] : this->_tasks)
         if (auto task = std::find_if(tasks.begin(), tasks.end(), [hash](const auto& t) { return t.hash == hash; }); task != tasks.end())
             return *task;
     return std::nullopt;

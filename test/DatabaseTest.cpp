@@ -68,6 +68,18 @@ TEST_CASE("get task")
     REQUIRE_FALSE(database.get(42).has_value());
 }
 
+TEST_CASE("move task")
+{
+    const Date initialDate = {.year = 2020, .month = 2, .day = 2};
+    const Date newDate = {.year = 2020, .month = 2, .day = 3};
+    Database database;
+    database.add({.description = "some task", .priority = 1}, initialDate);
+    uint32_t hash = database.at(initialDate).front().hash;
+    database.move(hash, newDate);
+    REQUIRE(database.at(initialDate).empty());
+    REQUIRE(database.at(newDate).front().description == "some task");
+}
+
 TEST_CASE("input file")
 {
     auto path = std::filesystem::temp_directory_path().append("database.bin");

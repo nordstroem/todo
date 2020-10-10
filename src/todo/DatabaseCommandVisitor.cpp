@@ -88,9 +88,17 @@ void DatabaseCommandVisitor::operator()(RemoveTask&& cmd)
 void DatabaseCommandVisitor::operator()(CheckTask&& cmd)
 {
     if (auto task = this->_database.get(cmd.hash)) {
-        auto checkMessage = task->done ? "not done" : "done";
+        const auto* checkMessage = task->done ? "not done" : "done";
         print(textColor, "Marked task \"{}\" as {}\n", task->description, checkMessage);
         this->_database.check(cmd.hash);
+    }
+}
+
+void DatabaseCommandVisitor::operator()(MoveTask&& cmd)
+{
+    if (auto task = this->_database.get(cmd.hash)) {
+        print(textColor, "Moved task \"{}\" to {}\n", task->description, cmd.date.toString());
+        this->_database.move(cmd.hash, cmd.date);
     }
 }
 

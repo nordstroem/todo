@@ -43,6 +43,12 @@ public:
      */
     void check(uint32_t hash);
     /**
+     * Moves a task with a specific hash to another date
+     * @param hash hash of the task
+     * @param date new date
+     */
+    void move(uint32_t hash, const Date& date);
+    /**
      * Returns the task corresponding to a specific hash
      * @param hash hash of the task
      * @return the task if it exists, std::nullopt otherwise

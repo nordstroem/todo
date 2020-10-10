@@ -13,6 +13,7 @@ DatabaseCommand parse(int argc, const char** argv)
             ("p,priority", "Priority of added task", cxxopts::value<int>()->default_value("0"))        //
             ("r,remove", "Hash of task to remove", cxxopts::value<uint32_t>())                         //
             ("c,check", "Check a task with a specific hash", cxxopts::value<uint32_t>())               //
+            ("m,move", "Move a task with a specific hash to another date", cxxopts::value<uint32_t>()) //
             ("s,show", "Show tasks at a specific date")                                                //
             ("d,date", "Date to add or query", cxxopts::value<std::string>()->default_value("today")); //
     options.parse_positional({"date"});
@@ -40,6 +41,9 @@ DatabaseCommand parse(int argc, const char** argv)
 
         if (result.count("check") != 0)
             return CheckTask{.hash = result["check"].as<std::uint32_t>()};
+
+        if (result.count("move") != 0)
+            return MoveTask{.hash = result["move"].as<std::uint32_t>(), .date = date};
 
         if (result.count("show") != 0 || result.arguments().size() <= 1)
             return ShowTasks{.date = date};
