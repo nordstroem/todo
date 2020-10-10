@@ -15,9 +15,13 @@ DatabaseCommand parse(int argc, const char** argv)
             ("c,check", "Check a task with a specific hash", cxxopts::value<uint32_t>())               //
             ("s,show", "Show tasks at a specific date")                                                //
             ("d,date", "Date to add or query", cxxopts::value<std::string>()->default_value("today")); //
+    options.parse_positional({"date"});
+    options.positional_help("Date");
+    options.show_positional_help();
 
     try {
         auto result = options.parse(argc, argv);
+
         if (result.count("help") != 0)
             return ShowMessage{.message = options.help()};
 
@@ -37,7 +41,7 @@ DatabaseCommand parse(int argc, const char** argv)
         if (result.count("check") != 0)
             return CheckTask{.hash = result["check"].as<std::uint32_t>()};
 
-        if (result.count("show") != 0)
+        if (result.count("show") != 0 || result.arguments().size() <= 1)
             return ShowTasks{.date = date};
 
     } catch (const std::exception& exception) {

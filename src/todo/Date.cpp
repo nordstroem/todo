@@ -40,11 +40,11 @@ Date Date::yesterday()
 
 Date Date::fromString(const std::string& string) noexcept(false)
 {
-    if (string == "yesterday")
+    if (string.starts_with("y"))
         return Date::yesterday();
-    if (string == "today")
+    if (string.starts_with("tod"))
         return Date::today();
-    if (string == "tomorrow")
+    if (string.starts_with("tom"))
         return Date::tomorrow();
 
     if (validDateString(string)) {
