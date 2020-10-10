@@ -50,7 +50,7 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 
     const auto& tasks = this->_database.at(cmd.date);
     const auto textColor = fg(color::indian_red);
-    if (tasks.size() > 0) {
+    if (!tasks.empty()) {
         MaxLengthHelper maxLength(tasks);
         constexpr std::array<std::string_view, 4> header = {"Hash", "Task", "Priority", "Done"};
         auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.hash); }), header[0].length());
