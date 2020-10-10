@@ -5,7 +5,7 @@
 
 namespace todo {
 /**
- * 
+ * Applies a DatabaseCommand to a database
  */
 class DatabaseCommandVisitor
 {
