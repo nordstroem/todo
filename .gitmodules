@@ -16,6 +16,3 @@
 [submodule "third_party/date"]
 	path = third_party/date
 	url = https://github.com/HowardHinnant/date.git
-[submodule "third_party/CLI11"]
-	path = third_party/CLI11
-	url = https://github.com/CLIUtils/CLI11.git
