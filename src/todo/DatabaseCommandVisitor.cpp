@@ -36,8 +36,6 @@ using namespace fmt;
 
 namespace todo {
 
-static const auto textColor = fg(color::indian_red);
-
 DatabaseCommandVisitor::DatabaseCommandVisitor(std::string_view databasePath)
     : _database(Database(databasePath))
 {
@@ -59,28 +57,27 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
         auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.priority); }), header[2].length());
 
         constexpr auto rowFormat = "{:>{}}  {:<{}}  {:<{}}  {}\n";
-        print(textColor, "To do at {}:\n\n", cmd.date.toString());
+        print("To do at {}:\n\n", cmd.date.toString());
         print(rowFormat, header[0], hashPadding, header[1], taskPadding, header[2], prioPadding, header[3]);
         for (const auto& task : tasks) {
             auto checked = task.done ? format(fg(color::green), "V") : format(" ");
             print(rowFormat, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, task.priority, prioPadding, format("[{}]", checked));
         }
-        print("\n");
     } else {
-        print(textColor, "Nothing to do {}\n", cmd.date == Date::today() ? format("today") : format("at {}", cmd.date.toString()));
+        print("Nothing to do {}\n", cmd.date == Date::today() ? format("today") : format("at {}", cmd.date.toString()));
     }
 }
 
 void DatabaseCommandVisitor::operator()(AddTask&& cmd)
 {
-    print(textColor, "Added \"{}\" to do at {}\n", cmd.task.description, cmd.date.toString());
+    print("Added \"{}\" to do at {}\n", cmd.task.description, cmd.date.toString());
     this->_database.add(std::move(cmd.task), cmd.date);
 }
 
 void DatabaseCommandVisitor::operator()(RemoveTask&& cmd)
 {
     if (auto task = this->_database.get(cmd.hash)) {
-        print(textColor, "Removed task \"{}\"\n", task->description);
+        print("Removed task \"{}\"\n", task->description);
         this->_database.remove(cmd.hash);
     }
 }
@@ -89,7 +86,7 @@ void DatabaseCommandVisitor::operator()(CheckTask&& cmd)
 {
     if (auto task = this->_database.get(cmd.hash)) {
         const auto* checkMessage = task->done ? "not done" : "done";
-        print(textColor, "Marked task \"{}\" as {}\n", task->description, checkMessage);
+        print("Marked task \"{}\" as {}\n", task->description, checkMessage);
         this->_database.check(cmd.hash);
     }
 }
@@ -97,7 +94,7 @@ void DatabaseCommandVisitor::operator()(CheckTask&& cmd)
 void DatabaseCommandVisitor::operator()(MoveTask&& cmd)
 {
     if (auto task = this->_database.get(cmd.hash)) {
-        print(textColor, "Moved task \"{}\" to {}\n", task->description, cmd.date.toString());
+        print("Moved task \"{}\" to {}\n", task->description, cmd.date.toString());
         this->_database.move(cmd.hash, cmd.date);
     }
 }
