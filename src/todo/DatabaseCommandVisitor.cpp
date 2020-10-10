@@ -54,15 +54,15 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
         MaxLengthHelper maxLength(tasks);
         constexpr std::array<std::string_view, 4> header = {"Hash", "Task", "Priority", "Done"};
         auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.hash); }), header[0].length());
-        auto taskPadding = std::max(maxLength([](const auto& e) { return format(R"("{}")", e.description); }), header[1].length());
+        auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.description); }), header[1].length());
         auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.priority); }), header[2].length());
 
         constexpr auto rowFormat = "{:>{}}  {:<{}}  {:<{}}  {}\n";
         print(textColor, "To do at {}:\n\n", cmd.date.toString());
         print(rowFormat, header[0], hashPadding, header[1], taskPadding, header[2], prioPadding, header[3]);
         for (const auto& task : tasks) {
-            auto checked = task.done ? format(fg(color::green), "[V]") : format("[ ]");
-            print(rowFormat, task.hash, hashPadding, format(R"("{}")", task.description), taskPadding, task.priority, prioPadding, checked);
+            auto checked = task.done ? format(fg(color::green), "V") : format(" ");
+            print(rowFormat, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, task.priority, prioPadding, format("[{}]", checked));
         }
         print("\n");
     } else {
