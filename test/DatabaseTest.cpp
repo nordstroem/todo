@@ -3,6 +3,7 @@
 #include <doctest.h>
 #include <filesystem>
 #include <fmt/core.h>
+#include <ranges>
 
 using namespace todo;
 

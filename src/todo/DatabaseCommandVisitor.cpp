@@ -5,11 +5,14 @@
 #include <ranges>
 #include <string_view>
 
+namespace ranges = std::ranges;
+using namespace fmt;
+
 namespace {
 
 // clang-format off
 template <typename F, typename Container>
-concept ElementToString = requires(F f) {
+concept ElementToStringTransform = requires(F f) {
     { f(std::declval<typename Container::value_type>()) } -> std::convertible_to<std::string_view>;
 };
 // clang-format on
@@ -18,7 +21,7 @@ concept ElementToString = requires(F f) {
  * Function object for calculating the maximum length of a string representation of the elements in a container
  * @tparam Container container type
  */
-template <std::ranges::range Container>
+template <ranges::range Container>
 class MaxLengthHelper
 {
 public:
@@ -28,22 +31,21 @@ public:
     /**
      * Calculates the maximum string representation length of the elements in the container
      * @param transform function that returns the string representation of an element 
-     * @return the maximum length
+     * @return the maximum length, 0 if the container is empty
      */
-
-    template <ElementToString<Container> Transform>
-    auto operator()(const Transform& transform) const
+    size_t operator()(const ElementToStringTransform<Container> auto& transform) const
     {
-        auto compare = [&](const auto& a, const auto& b) { return std::string_view(transform(a)).length() < std::string_view(transform(b)).length(); };
-        return transform(*std::max_element(this->_container.begin(), this->_container.end(), compare)).length();
+        auto toStringLength = [&](const auto& e) { return std::string_view(transform(e)).length(); };
+        auto compare = [&](const auto& a, const auto& b) { return toStringLength(a) < toStringLength(b); };
+        if (!this->_container.empty())
+            return toStringLength(*std::max_element(this->_container.begin(), this->_container.end(), compare));
+        return 0;
     }
 
 private:
     const Container& _container;
 };
 } // namespace
-
-using namespace fmt;
 
 namespace todo {
 
