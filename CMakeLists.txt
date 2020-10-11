@@ -15,9 +15,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_compile_options("-Wall" "-Wextra" "-Wpedantic")
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    add_compile_options (-fdiagnostics-color=always)
+    add_compile_options ("-fdiagnostics-color=always" "-fconcepts")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    add_compile_options (-fcolor-diagnostics)
+    add_compile_options ("-fcolor-diagnostics")
 endif ()
 
 set(SPDLOG_FMT_EXTERNAL ON)

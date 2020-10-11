@@ -2,13 +2,23 @@
 #include <algorithm>
 #include <fmt/color.h>
 #include <fmt/core.h>
+#include <ranges>
+#include <string_view>
 
 namespace {
+
+// clang-format off
+template <typename F, typename Container>
+concept ElementToString = requires(F f) {
+    { f(std::declval<typename Container::value_type>()) } -> std::convertible_to<std::string_view>;
+};
+// clang-format on
+
 /**
  * Function object for calculating the maximum length of a string representation of the elements in a container
  * @tparam Container container type
  */
-template <typename Container>
+template <std::ranges::range Container>
 class MaxLengthHelper
 {
 public:
@@ -20,10 +30,11 @@ public:
      * @param transform function that returns the string representation of an element 
      * @return the maximum length
      */
-    template <typename Transform>
+
+    template <ElementToString<Container> Transform>
     auto operator()(const Transform& transform) const
     {
-        auto compare = [&](const auto& a, const auto& b) { return transform(a).length() < transform(b).length(); };
+        auto compare = [&](const auto& a, const auto& b) { return std::string_view(transform(a)).length() < std::string_view(transform(b)).length(); };
         return transform(*std::max_element(this->_container.begin(), this->_container.end(), compare)).length();
     }
 
