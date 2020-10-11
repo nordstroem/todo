@@ -36,9 +36,14 @@ public:
     size_t operator()(const ElementToStringTransform<Container> auto& transform) const
     {
         auto toStringLength = [&](const auto& e) { return std::string_view(transform(e)).length(); };
-        auto compare = [&](const auto& a, const auto& b) { return toStringLength(a) < toStringLength(b); };
-        if (!this->_container.empty())
+        if (!this->_container.empty()) {
+#if defined(__GNUC__) && !defined(__clang__)
+            return ranges::max(this->_container | ranges::views::transform(toStringLength));
+#else
+            auto compare = [&](const auto& a, const auto& b) { return toStringLength(a) < toStringLength(b); };
             return toStringLength(*std::max_element(this->_container.begin(), this->_container.end(), compare));
+#endif
+        }
         return 0;
     }
 
