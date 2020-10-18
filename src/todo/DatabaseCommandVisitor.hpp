@@ -16,6 +16,7 @@ public:
 public:
     void operator()(ShowMessage&& cmd) const;
     void operator()(ShowTasks&& cmd) const;
+    void operator()(ShowUndoneTasks&& cmd) const;
     void operator()(AddTask&& cmd);
     void operator()(RemoveTask&& cmd);
     void operator()(CheckTask&& cmd);

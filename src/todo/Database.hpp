@@ -5,6 +5,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace todo {
@@ -61,6 +62,11 @@ public:
      * @remark this vector is sorted from highest to lowest task priority
      */
     std::vector<HashedTask> at(const Date& date) const;
+    /**
+     * Returns all tasks that are not done.
+     * @return vector containing the undone tasks together with their associated date.
+     */
+    std::vector<std::pair<Date, HashedTask>> undone() const;
 
 private:
     std::optional<std::string> _file;

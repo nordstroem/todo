@@ -33,6 +33,7 @@ public:
     size_t hash() const noexcept;
 
     bool operator==(const Date& other) const;
+    bool operator<(const Date& other) const;
 };
 
 } // namespace todo

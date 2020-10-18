@@ -109,4 +109,22 @@ std::vector<HashedTask> Database::at(const Date& date) const
     return {};
 }
 
+std::vector<std::pair<Date, HashedTask>> Database::undone() const
+{
+    std::vector<std::pair<Date, HashedTask>> undoneTasks;
+    for (const auto& [date, tasks] : this->_tasks) {
+        for (const auto& task : tasks) {
+            if (!task.done)
+                undoneTasks.push_back({date, task});
+        }
+    }
+    auto compare = [](const auto& a, const auto& b) {
+        if (a.first != b.first)
+            return a.first < b.first;
+        return a.second.priority > b.second.priority;
+    };
+    std::sort(undoneTasks.begin(), undoneTasks.end(), compare);
+    return undoneTasks;
+}
+
 } // namespace todo

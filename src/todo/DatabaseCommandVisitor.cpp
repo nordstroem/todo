@@ -86,6 +86,10 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
     }
 }
 
+void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowUndoneTasks&& cmd) const
+{
+}
+
 void DatabaseCommandVisitor::operator()(AddTask&& cmd)
 {
     print("Added \"{}\" to do at {}\n", cmd.task.description, cmd.date.toString());

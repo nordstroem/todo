@@ -69,6 +69,25 @@ TEST_CASE("get task")
     REQUIRE_FALSE(database.get(42).has_value());
 }
 
+TEST_CASE("get undone tasks")
+{
+    const Date firstDate = {.year = 2020, .month = 2, .day = 1};
+    const Date secondDate = {.year = 2020, .month = 2, .day = 2};
+    Database database;
+    database.add({.description = "first task", .priority = 3}, firstDate);
+    uint32_t firstHash = database.at(firstDate).front().hash;
+    database.check(firstHash);
+    database.add({.description = "second task", .priority = 5}, firstDate);
+    database.add({.description = "third task", .priority = 3}, secondDate);
+    database.add({.description = "fourth task", .priority = 4}, secondDate);
+
+    auto undone = database.undone();
+    REQUIRE(undone.size() == 3);
+    REQUIRE(undone.at(0).second.description == "second task");
+    REQUIRE(undone.at(1).second.description == "fourth task");
+    REQUIRE(undone.at(2).second.description == "third task");
+}
+
 TEST_CASE("move task")
 {
     const Date initialDate = {.year = 2020, .month = 2, .day = 2};
