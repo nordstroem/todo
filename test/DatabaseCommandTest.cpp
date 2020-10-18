@@ -57,6 +57,13 @@ TEST_CASE("move task")
     REQUIRE(date == Date::today());
 }
 
+TEST_CASE("show undone tasks")
+{
+    std::vector<const char*> args = {{"todo", "--show_undone"}};
+    auto command = todo::parse(args.size(), &args[0]);
+    REQUIRE(std::holds_alternative<ShowUndoneTasks>(command));
+}
+
 TEST_CASE("apply add task command")
 {
     const auto date = Date::fromString("2012-12-12");

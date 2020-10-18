@@ -15,6 +15,7 @@ DatabaseCommand parse(int argc, const char** argv)
             ("c,check", "Check a task with a specific hash", cxxopts::value<uint32_t>())               //
             ("m,move", "Move a task with a specific hash to another date", cxxopts::value<uint32_t>()) //
             ("s,show", "Show tasks at a specific date")                                                //
+            ("u,show_undone", "Show all undone tasks")                                                 //
             ("d,date", "Date to add or query", cxxopts::value<std::string>()->default_value("today")); //
     options.parse_positional({"date"});
     options.positional_help("Date");
@@ -44,6 +45,9 @@ DatabaseCommand parse(int argc, const char** argv)
 
         if (result.count("move") != 0)
             return MoveTask{.hash = result["move"].as<std::uint32_t>(), .date = date};
+
+        if (result.count("show_undone") != 0)
+            return ShowUndoneTasks{};
 
         if (result.count("show") != 0 || result.arguments().size() <= 1)
             return ShowTasks{.date = date};

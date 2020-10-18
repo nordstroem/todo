@@ -65,6 +65,8 @@ public:
     /**
      * Returns all tasks that are not done.
      * @return vector containing the undone tasks together with their associated date.
+     * @remark this vector is sorted by from earliest date to latest date. Within the same date, 
+     * the tasks are sorted from highest to lowest priority.
      */
     std::vector<std::pair<Date, HashedTask>> undone() const;
 

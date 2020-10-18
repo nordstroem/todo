@@ -3,6 +3,7 @@
 #include <fmt/color.h>
 #include <fmt/core.h>
 #include <ranges>
+#include <span>
 #include <string_view>
 
 namespace ranges = std::ranges;
@@ -88,6 +89,9 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 
 void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowUndoneTasks&& cmd) const
 {
+    for (const auto& [date, task] : this->_database.undone()) {
+        print("{} {} {} {}\n", date.toString(), task.hash, task.description, task.priority);
+    }
 }
 
 void DatabaseCommandVisitor::operator()(AddTask&& cmd)
