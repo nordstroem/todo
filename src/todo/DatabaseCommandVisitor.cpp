@@ -3,7 +3,6 @@
 #include <fmt/color.h>
 #include <fmt/core.h>
 #include <ranges>
-#include <span>
 #include <string_view>
 
 namespace ranges = std::ranges;
