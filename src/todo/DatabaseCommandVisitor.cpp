@@ -75,7 +75,7 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
         auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.description); }), header[1].length());
         auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.priority); }), header[2].length());
 
-        constexpr auto rowFormat = "{:>{}}  {:<{}}  {:<{}}  {}\n";
+        constexpr auto rowFormat = "{:<{}}  {:<{}}  {:<{}}  {}\n";
         print("To do at {}:\n\n", cmd.date.toString());
         print(rowFormat, header[0], hashPadding, header[1], taskPadding, header[2], prioPadding, header[3]);
         for (const auto& task : tasks) {
@@ -89,8 +89,23 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 
 void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowUndoneTasks&& cmd) const
 {
-    for (const auto& [date, task] : this->_database.undone()) {
-        print("{} {} {} {}\n", date.toString(), task.hash, task.description, task.priority);
+    auto undone = this->_database.undone();
+    if (!undone.empty()) {
+        MaxLengthHelper maxLength(undone);
+        constexpr std::array<std::string_view, 5> header = {"Date", "Hash", "Task", "Priority"};
+        auto datePadding = std::max(maxLength([](const auto& e) { return format("{}", e.first.toString()); }), header[0].length());
+        auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.second.hash); }), header[1].length());
+        auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.second.description); }), header[2].length());
+        auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.second.priority); }), header[3].length());
+
+        print("Undone tasks:\n");
+        constexpr auto rowFormat = "{:<{}}  {:<{}}  {:<{}}  {:<{}}\n";
+        print(rowFormat, header[0], datePadding, header[1], hashPadding, header[2], taskPadding, header[3], prioPadding, header[4]);
+        for (const auto& [date, task] : undone) {
+            print(rowFormat, date.toString(), datePadding, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, task.priority, prioPadding);
+        }
+    } else {
+        print("No undone tasks\n");
     }
 }
 
