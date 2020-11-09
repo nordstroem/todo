@@ -58,7 +58,7 @@ Database::~Database()
     }
 }
 
-void Database::add(Task&& task, const Date& date)
+void Database::add(Task task, const Date& date)
 {
     uint32_t largestHash = 0;
     for (const auto& [date, tasks] : this->_tasks)

@@ -32,7 +32,7 @@ public:
      * @param task task to add
      * @param date date to be added
      */
-    void add(Task&& task, const Date& date);
+    void add(Task task, const Date& date);
     /**
      * Removes a task with a specific hash from the database
      * @param hash hash of the task
