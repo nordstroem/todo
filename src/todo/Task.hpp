@@ -19,11 +19,10 @@ struct HashedTask : public Task
 
 public:
     HashedTask() noexcept = default;
-    HashedTask(Task&& task, uint32_t hash) noexcept
+    HashedTask(Task task, uint32_t hash) noexcept
+        : Task{std::move(task)}
+        , hash(hash)
     {
-        this->description = std::move(task.description);
-        this->priority = task.priority;
-        this->hash = hash;
     }
 };
 
