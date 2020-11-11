@@ -37,55 +37,55 @@ static auto load(const std::string& file)
 
 Database::Database(std::string_view file)
     : _file(file)
-    , _tasks(load(*this->_file))
+    , _tasks(load(*_file))
 {
 }
 
 Database::~Database()
 {
     try {
-        if (this->_file) {
-            std::ofstream ostream(*this->_file, std::ios::binary);
+        if (_file) {
+            std::ofstream ostream(*_file, std::ios::binary);
             if (ostream.good()) {
                 cereal::BinaryOutputArchive oarchive(ostream);
-                oarchive(this->_tasks);
+                oarchive(_tasks);
             } else {
-                spdlog::error("{} could not be written to", *this->_file);
+                spdlog::error("{} could not be written to", *_file);
             }
         }
     } catch (const std::exception& e) {
-        spdlog::error("{} could not be written to", *this->_file);
+        spdlog::error("{} could not be written to", *_file);
     }
 }
 
 void Database::add(Task task, const Date& date)
 {
     uint32_t largestHash = 0;
-    for (const auto& [date, tasks] : this->_tasks)
+    for (const auto& [date, tasks] : _tasks)
         for (const auto& task : tasks)
             largestHash = std::max(largestHash, task.hash);
 
-    this->_tasks[date].emplace_back(std::move(task), largestHash + 1);
+    _tasks[date].emplace_back(std::move(task), largestHash + 1);
 }
 
 void Database::remove(uint32_t hash)
 {
-    for (auto& [date, tasks] : this->_tasks)
+    for (auto& [date, tasks] : _tasks)
         std::erase_if(tasks, [hash](const auto& t) { return t.hash == hash; });
 }
 
 void Database::check(uint32_t hash)
 {
-    for (auto& [date, tasks] : this->_tasks)
+    for (auto& [date, tasks] : _tasks)
         if (auto task = std::ranges::find_if(tasks, [hash](const auto& t) { return t.hash == hash; }); task != tasks.end())
             task->done = !task->done;
 }
 
 void Database::move(uint32_t hash, const Date& date)
 {
-    for (auto& [currentDate, tasks] : this->_tasks)
+    for (auto& [currentDate, tasks] : _tasks)
         if (auto task = std::ranges::find_if(tasks, [hash](const auto& t) { return t.hash == hash; }); task != tasks.end()) {
-            this->_tasks[date].push_back(*task);
+            _tasks[date].push_back(*task);
             tasks.erase(task);
             break;
         }
@@ -93,7 +93,7 @@ void Database::move(uint32_t hash, const Date& date)
 
 std::optional<HashedTask> Database::get(uint32_t hash) const
 {
-    for (const auto& [date, tasks] : this->_tasks)
+    for (const auto& [date, tasks] : _tasks)
         if (auto task = std::ranges::find_if(tasks, [hash](const auto& t) { return t.hash == hash; }); task != tasks.end())
             return *task;
     return std::nullopt;
@@ -101,7 +101,7 @@ std::optional<HashedTask> Database::get(uint32_t hash) const
 
 std::vector<HashedTask> Database::at(const Date& date) const
 {
-    if (auto tasksAtDate = this->_tasks.find(date); tasksAtDate != this->_tasks.end()) {
+    if (auto tasksAtDate = _tasks.find(date); tasksAtDate != _tasks.end()) {
         auto tasks = tasksAtDate->second;
         std::sort(tasks.begin(), tasks.end(), std::greater<>());
         return tasks;
@@ -112,7 +112,7 @@ std::vector<HashedTask> Database::at(const Date& date) const
 std::vector<std::pair<Date, HashedTask>> Database::undone() const
 {
     std::vector<std::pair<Date, HashedTask>> undoneTasks;
-    for (const auto& [date, tasks] : this->_tasks) {
+    for (const auto& [date, tasks] : _tasks) {
         for (const auto& task : tasks) {
             if (!task.done)
                 undoneTasks.push_back({date, task});

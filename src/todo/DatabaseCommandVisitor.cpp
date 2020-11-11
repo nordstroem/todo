@@ -36,12 +36,12 @@ public:
     size_t operator()(const ElementToStringTransform<Container> auto& transform) const
     {
         auto toStringLength = [&](const auto& e) { return std::string_view(transform(e)).length(); };
-        if (!this->_container.empty()) {
+        if (!_container.empty()) {
 #if defined(__GNUC__) && !defined(__clang__)
-            return ranges::max(this->_container | ranges::views::transform(toStringLength));
+            return ranges::max(_container | ranges::views::transform(toStringLength));
 #else
             auto compare = [&](const auto& a, const auto& b) { return toStringLength(a) < toStringLength(b); };
-            return toStringLength(*std::max_element(this->_container.begin(), this->_container.end(), compare));
+            return toStringLength(*std::max_element(_container.begin(), _container.end(), compare));
 #endif
         }
         return 0;
@@ -66,7 +66,7 @@ void DatabaseCommandVisitor::operator()(ShowMessage&& cmd) const
 
 void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 {
-    const auto& tasks = this->_database.at(cmd.date);
+    const auto& tasks = _database.at(cmd.date);
     if (!tasks.empty()) {
         MaxLengthHelper maxLength(tasks);
         constexpr std::array<std::string_view, 4> header = {"Hash", "Task", "Priority", "Done"};
@@ -88,7 +88,7 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 
 void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowUndoneTasks&& cmd) const
 {
-    auto undone = this->_database.undone();
+    auto undone = _database.undone();
     if (!undone.empty()) {
         MaxLengthHelper maxLength(undone);
         constexpr std::array<std::string_view, 5> header = {"Date", "Hash", "Task", "Priority"};
@@ -111,31 +111,31 @@ void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowUndoneTasks&& cmd) 
 void DatabaseCommandVisitor::operator()(AddTask&& cmd)
 {
     print("Added \"{}\" to do at {}\n", cmd.task.description, cmd.date.toString());
-    this->_database.add(std::move(cmd.task), cmd.date);
+    _database.add(std::move(cmd.task), cmd.date);
 }
 
 void DatabaseCommandVisitor::operator()(RemoveTask&& cmd)
 {
-    if (auto task = this->_database.get(cmd.hash)) {
+    if (auto task = _database.get(cmd.hash)) {
         print("Removed task \"{}\"\n", task->description);
-        this->_database.remove(cmd.hash);
+        _database.remove(cmd.hash);
     }
 }
 
 void DatabaseCommandVisitor::operator()(CheckTask&& cmd)
 {
-    if (auto task = this->_database.get(cmd.hash)) {
+    if (auto task = _database.get(cmd.hash)) {
         const auto* checkMessage = task->done ? "not done" : "done";
         print("Marked task \"{}\" as {}\n", task->description, checkMessage);
-        this->_database.check(cmd.hash);
+        _database.check(cmd.hash);
     }
 }
 
 void DatabaseCommandVisitor::operator()(MoveTask&& cmd)
 {
-    if (auto task = this->_database.get(cmd.hash)) {
+    if (auto task = _database.get(cmd.hash)) {
         print("Moved task \"{}\" to {}\n", task->description, cmd.date.toString());
-        this->_database.move(cmd.hash, cmd.date);
+        _database.move(cmd.hash, cmd.date);
     }
 }
 
@@ -145,7 +145,7 @@ void DatabaseCommandVisitor::operator()([[maybe_unused]] DoNothing&& cmd) const
 
 const Database& DatabaseCommandVisitor::database() const noexcept
 {
-    return this->_database;
+    return _database;
 }
 
 } // namespace todo
