@@ -66,18 +66,6 @@ bool Date::valid() const
     return date::year_month_day(date::year{this->year}, date::month{this->month}, date::day{this->day}).ok();
 }
 
-bool Date::operator==(const Date& other) const
-{
-    return this->year == other.year && this->month == other.month && this->day == other.day;
-}
-
-bool Date::operator<(const Date& other) const
-{
-    auto first = date::year_month_day(date::year{this->year}, date::month{month}, date::day{day});
-    auto second = date::year_month_day(date::year{other.year}, date::month{other.month}, date::day{other.day});
-    return first < second;
-}
-
 size_t Date::hash() const noexcept
 {
     return std::hash<int>{}(date::sys_days{date::year_month_day(date::year{this->year}, date::month{month}, date::day{day})}.time_since_epoch().count());

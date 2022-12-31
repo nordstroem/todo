@@ -30,7 +30,7 @@ public:
     {}
     /**
      * Calculates the maximum string representation length of the elements in the container
-     * @param transform function that returns the string representation of an element 
+     * @param transform function that returns the string representation of an element
      * @return the maximum length, 0 if the container is empty
      */
     size_t operator()(const ElementToStringTransform<Container> auto& transform) const

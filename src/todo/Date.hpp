@@ -19,7 +19,7 @@ public:
     static Date yesterday();
     /**
      * Returns a date from a string in the format yyyy-mm-dd. If the string is ill-formed, std::invalid_argument is thrown
-     * @param string the date as a string 
+     * @param string the date as a string
      * @return the date as an optional
      */
     static Date fromString(const std::string& string) noexcept(false);
@@ -31,9 +31,7 @@ public:
     bool valid() const;
     /// @return hash of this date
     size_t hash() const noexcept;
-
-    bool operator==(const Date& other) const;
-    bool operator<(const Date& other) const;
+    auto operator<=>(const Date&) const = default;
 };
 
 } // namespace todo
