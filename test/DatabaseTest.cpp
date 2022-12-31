@@ -1,6 +1,6 @@
 #include "Database.hpp"
 #include <algorithm>
-#include <doctest.h>
+#include <doctest/doctest.h>
 #include <filesystem>
 #include <fmt/core.h>
 #include <ranges>
