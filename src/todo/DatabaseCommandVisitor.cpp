@@ -33,16 +33,11 @@ public:
      * @param transform function that returns the string representation of an element
      * @return the maximum length, 0 if the container is empty
      */
-    size_t operator()(const ElementToStringTransform<Container> auto& transform) const
+    size_t operator()(const auto& transform) const
     {
         auto toStringLength = [&](const auto& e) { return std::string_view(transform(e)).length(); };
         if (!_container.empty()) {
-#if defined(__GNUC__) && !defined(__clang__)
             return ranges::max(_container | ranges::views::transform(toStringLength));
-#else
-            auto compare = [&](const auto& a, const auto& b) { return toStringLength(a) < toStringLength(b); };
-            return toStringLength(*std::max_element(_container.begin(), _container.end(), compare));
-#endif
         }
         return 0;
     }

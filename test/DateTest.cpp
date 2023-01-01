@@ -26,3 +26,11 @@ TEST_CASE("from string")
     REQUIRE_THROWS(Date::fromString("random string"));
     REQUIRE_THROWS(Date::fromString("2019012030"));
 }
+
+TEST_CASE("ordering")
+{
+    Date d1{.year = 2022, .month = 11, .day = 30};
+    REQUIRE(d1.valid());
+    Date d2{.year = 2023, .month = 2, .day = 0};
+    REQUIRE_GE(d2, d1);
+}
