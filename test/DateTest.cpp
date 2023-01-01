@@ -5,15 +5,15 @@ using namespace todo;
 
 TEST_CASE("to string")
 {
-    Date d{.year = 2019, .month = 12, .day = 30};
+    const Date d{.year = 2019, .month = 12, .day = 30};
     REQUIRE(d.toString() == "2019-12-30");
 }
 
 TEST_CASE("valid")
 {
-    Date d1{.year = 2020, .month = 10, .day = 1};
+    const Date d1{.year = 2020, .month = 10, .day = 1};
     REQUIRE(d1.valid());
-    Date d2{.year = 2020, .month = 2, .day = 31};
+    const Date d2{.year = 2020, .month = 2, .day = 31};
     REQUIRE_FALSE(d2.valid());
 }
 
@@ -29,8 +29,8 @@ TEST_CASE("from string")
 
 TEST_CASE("ordering")
 {
-    Date d1{.year = 2022, .month = 11, .day = 30};
+    const Date d1{.year = 2022, .month = 11, .day = 30};
     REQUIRE(d1.valid());
-    Date d2{.year = 2023, .month = 2, .day = 0};
+    const Date d2{.year = 2023, .month = 2, .day = 0};
     REQUIRE_GE(d2, d1);
 }

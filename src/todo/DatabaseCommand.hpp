@@ -1,6 +1,7 @@
 #pragma once
 #include "Date.hpp"
 #include "Task.hpp"
+#include <span>
 #include <string>
 #include <variant>
 
@@ -19,6 +20,6 @@ struct DoNothing { };
 
 using DatabaseCommand = std::variant<AddTask, ShowMessage, ShowTasks, ShowUndoneTasks, RemoveTask, CheckTask, MoveTask, DoNothing>;
 
-DatabaseCommand parse(int argc, const char** argv);
+DatabaseCommand parse(std::span<const char*> args);
 
 } // namespace todo

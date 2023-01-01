@@ -22,7 +22,8 @@ void serialize(Archive& archive, Date& date)
     archive(date.year, date.month, date.day);
 }
 
-static auto load(const std::string& file)
+namespace {
+auto load(const std::string& file)
 {
     std::ifstream istream(file, std::ios::binary);
     std::unordered_map<Date, std::vector<HashedTask>> input;
@@ -34,6 +35,7 @@ static auto load(const std::string& file)
     }
     return input;
 }
+} // namespace
 
 Database::Database(std::string_view file)
     : _file(file)
@@ -115,7 +117,7 @@ std::vector<std::pair<Date, HashedTask>> Database::undone() const
     for (const auto& [date, tasks] : _tasks) {
         for (const auto& task : tasks) {
             if (!task.done)
-                undoneTasks.push_back({date, task});
+                undoneTasks.emplace_back(date, task);
         }
     }
     auto compare = [](const auto& a, const auto& b) {

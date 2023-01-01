@@ -4,7 +4,7 @@
 
 namespace todo {
 
-DatabaseCommand parse(int argc, const char** argv)
+DatabaseCommand parse(std::span<const char*> args)
 {
     cxxopts::Options options("todo", "todo");
     options.add_options()                                                                              //
@@ -22,12 +22,12 @@ DatabaseCommand parse(int argc, const char** argv)
     options.show_positional_help();
 
     try {
-        auto result = options.parse(argc, argv);
+        const auto result = options.parse(static_cast<int>(args.size()), &args.front());
 
         if (result.count("help") != 0)
             return ShowMessage{.message = options.help()};
 
-        Date date = Date::fromString(result["date"].as<std::string>());
+        const Date date = Date::fromString(result["date"].as<std::string>());
 
         if (!date.valid())
             return ShowMessage{.message = fmt::format("{} is not a valid date", date.toString())};

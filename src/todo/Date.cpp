@@ -5,9 +5,9 @@
 #include <fmt/core.h>
 #include <stdexcept>
 
-namespace todo {
+namespace {
 
-static bool validDateString(const std::string& string)
+bool validDateString(const std::string& string)
 {
     constexpr int formatLength = 10;
     if (string.length() != formatLength)
@@ -20,21 +20,25 @@ static bool validDateString(const std::string& string)
     return true;
 }
 
+} // namespace
+
+namespace todo {
+
 Date Date::today()
 {
-    auto ymd = date::year_month_day{date::floor<date::days>(std::chrono::system_clock::now())};
+    const auto ymd = date::year_month_day{date::floor<date::days>(std::chrono::system_clock::now())};
     return {.year = static_cast<int>(ymd.year()), .month = static_cast<unsigned>(ymd.month()), .day = static_cast<unsigned>(ymd.day())};
 }
 
 Date Date::tomorrow()
 {
-    auto ymd = date::year_month_day{date::floor<date::days>(std::chrono::system_clock::now()) + date::days(1)};
+    const auto ymd = date::year_month_day{date::floor<date::days>(std::chrono::system_clock::now()) + date::days(1)};
     return {.year = static_cast<int>(ymd.year()), .month = static_cast<unsigned>(ymd.month()), .day = static_cast<unsigned>(ymd.day())};
 }
 
 Date Date::yesterday()
 {
-    auto ymd = date::year_month_day{date::floor<date::days>(std::chrono::system_clock::now()) - date::days(1)};
+    const auto ymd = date::year_month_day{date::floor<date::days>(std::chrono::system_clock::now()) - date::days(1)};
     return {.year = static_cast<int>(ymd.year()), .month = static_cast<unsigned>(ymd.month()), .day = static_cast<unsigned>(ymd.day())};
 }
 
@@ -48,9 +52,9 @@ Date Date::fromString(const std::string& string) noexcept(false)
         return Date::tomorrow();
 
     if (validDateString(string)) {
-        int year = std::stoi(string.substr(0, 4));
-        unsigned month = std::stoull(string.substr(5, 2));
-        unsigned day = std::stoull(string.substr(8, 2));
+        const int year = std::stoi(string.substr(0, 4));
+        const unsigned month = std::stoull(string.substr(5, 2));
+        const unsigned day = std::stoull(string.substr(8, 2));
         return Date{.year = year, .month = month, .day = day};
     }
     throw std::invalid_argument(fmt::format("Date specificer is ill-formed, it must be the format yyyy-mm-dd, {}, {} or {}\n", R"("yesterday")", R"("today")", R"("tomorrow")"));

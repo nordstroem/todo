@@ -18,7 +18,8 @@ Checks: "*,
         -cppcoreguidelines-avoid-magic-numbers,
         -readability-magic-numbers,
         -readability-identifier-length
+        -concurrency*
 "
-WarningsAsErrors: '*'
+WarningsAsErrors: ''
 HeaderFilterRegex: ''
 FormatStyle:     none

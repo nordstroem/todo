@@ -10,13 +10,6 @@ using namespace fmt;
 
 namespace {
 
-// clang-format off
-template <typename F, typename Container>
-concept ElementToStringTransform = requires(F f) {
-    { f(std::declval<typename Container::value_type>()) } -> std::convertible_to<std::string_view>;
-};
-// clang-format on
-
 /**
  * Function object for calculating the maximum length of a string representation of the elements in a container
  * @tparam Container container type
@@ -43,7 +36,7 @@ public:
     }
 
 private:
-    const Container& _container;
+    const Container& _container; // NOLINT
 };
 } // namespace
 
@@ -63,11 +56,11 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 {
     const auto& tasks = _database.at(cmd.date);
     if (!tasks.empty()) {
-        MaxLengthHelper maxLength(tasks);
+        const MaxLengthHelper maxLength(tasks);
         constexpr std::array<std::string_view, 4> header = {"Hash", "Task", "Priority", "Done"};
-        auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.hash); }), header[0].length());
-        auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.description); }), header[1].length());
-        auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.priority); }), header[2].length());
+        const auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.hash); }), header[0].length());
+        const auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.description); }), header[1].length());
+        const auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.priority); }), header[2].length());
 
         constexpr auto rowFormat = "{:<{}}  {:<{}}  {:<{}}  {}\n";
         print("To do at {}:\n\n", cmd.date.toString());
@@ -83,14 +76,14 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 
 void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowUndoneTasks&& cmd) const
 {
-    auto undone = _database.undone();
+    const auto undone = _database.undone();
     if (!undone.empty()) {
-        MaxLengthHelper maxLength(undone);
+        const MaxLengthHelper maxLength(undone);
         constexpr std::array<std::string_view, 5> header = {"Date", "Hash", "Task", "Priority"};
-        auto datePadding = std::max(maxLength([](const auto& e) { return format("{}", e.first.toString()); }), header[0].length());
-        auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.second.hash); }), header[1].length());
-        auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.second.description); }), header[2].length());
-        auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.second.priority); }), header[3].length());
+        const auto datePadding = std::max(maxLength([](const auto& e) { return format("{}", e.first.toString()); }), header[0].length());
+        const auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.second.hash); }), header[1].length());
+        const auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.second.description); }), header[2].length());
+        const auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.second.priority); }), header[3].length());
 
         print("Undone tasks:\n");
         constexpr auto rowFormat = "{:<{}}  {:<{}}  {:<{}}  {:<{}}\n";

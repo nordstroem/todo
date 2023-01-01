@@ -74,13 +74,13 @@ TEST_CASE("get undone tasks")
     const Date secondDate = {.year = 2020, .month = 2, .day = 2};
     Database database;
     database.add({.description = "first task", .priority = 3}, firstDate);
-    uint32_t firstHash = database.at(firstDate).front().hash;
+    const uint32_t firstHash = database.at(firstDate).front().hash;
     database.check(firstHash);
     database.add({.description = "second task", .priority = 5}, firstDate);
     database.add({.description = "third task", .priority = 3}, secondDate);
     database.add({.description = "fourth task", .priority = 4}, secondDate);
 
-    auto undone = database.undone();
+    const auto undone = database.undone();
     REQUIRE(undone.size() == 3);
     REQUIRE(undone.at(0).second.description == "second task");
     REQUIRE(undone.at(1).second.description == "fourth task");
@@ -93,7 +93,7 @@ TEST_CASE("move task")
     const Date newDate = {.year = 2020, .month = 2, .day = 3};
     Database database;
     database.add({.description = "some task", .priority = 1}, initialDate);
-    uint32_t hash = database.at(initialDate).front().hash;
+    const uint32_t hash = database.at(initialDate).front().hash;
     database.move(hash, newDate);
     REQUIRE(database.at(initialDate).empty());
     REQUIRE(database.at(newDate).front().description == "some task");
@@ -101,7 +101,7 @@ TEST_CASE("move task")
 
 TEST_CASE("input file")
 {
-    auto path = std::filesystem::temp_directory_path().append("database.bin");
+    const auto path = std::filesystem::temp_directory_path().append("database.bin");
     if (std::filesystem::exists(path))
         std::filesystem::remove(path);
 
@@ -112,7 +112,7 @@ TEST_CASE("input file")
     }
     auto database = Database(path.c_str());
 
-    auto tasks = database.at(date);
+    const auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
 
     const auto& task = tasks.front();

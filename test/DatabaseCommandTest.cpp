@@ -7,7 +7,7 @@ using namespace todo;
 TEST_CASE("help message")
 {
     std::vector<const char*> args = {"todo", "--help"};
-    auto command = todo::parse(args.size(), &args[0]);
+    auto command = todo::parse(args);
     REQUIRE(std::holds_alternative<ShowMessage>(command));
     REQUIRE(std::get<ShowMessage>(command).message.size() > 0);
 }
@@ -15,14 +15,14 @@ TEST_CASE("help message")
 TEST_CASE("show task")
 {
     std::vector<const char*> args = {"todo", "--show"};
-    auto command = todo::parse(args.size(), &args[0]);
+    auto command = todo::parse(args);
     REQUIRE(std::holds_alternative<ShowTasks>(command));
 }
 
 TEST_CASE("add task")
 {
     std::vector<const char*> args = {{"todo", "--add", "do something", "--date", "2020-10-01"}};
-    auto command = todo::parse(args.size(), &args[0]);
+    auto command = todo::parse(args);
     REQUIRE(std::holds_alternative<AddTask>(command));
     auto [task, date] = std::get<AddTask>(command);
     REQUIRE(task.description == "do something");
@@ -32,7 +32,7 @@ TEST_CASE("add task")
 TEST_CASE("remove task")
 {
     std::vector<const char*> args = {{"todo", "--remove", "1"}};
-    auto command = todo::parse(args.size(), &args[0]);
+    auto command = todo::parse(args);
     REQUIRE(std::holds_alternative<RemoveTask>(command));
     auto [hash] = std::get<RemoveTask>(command);
     REQUIRE(hash == 1);
@@ -41,7 +41,7 @@ TEST_CASE("remove task")
 TEST_CASE("check task")
 {
     std::vector<const char*> args = {{"todo", "--check", "1"}};
-    auto command = todo::parse(args.size(), &args[0]);
+    auto command = todo::parse(args);
     REQUIRE(std::holds_alternative<CheckTask>(command));
     auto [hash] = std::get<CheckTask>(command);
     REQUIRE(hash == 1);
@@ -50,7 +50,7 @@ TEST_CASE("check task")
 TEST_CASE("move task")
 {
     std::vector<const char*> args = {{"todo", "--move", "1"}};
-    auto command = todo::parse(args.size(), &args[0]);
+    auto command = todo::parse(args);
     REQUIRE(std::holds_alternative<MoveTask>(command));
     auto [hash, date] = std::get<MoveTask>(command);
     REQUIRE(hash == 1);
@@ -60,7 +60,7 @@ TEST_CASE("move task")
 TEST_CASE("show undone tasks")
 {
     std::vector<const char*> args = {{"todo", "--show_undone"}};
-    auto command = todo::parse(args.size(), &args[0]);
+    auto command = todo::parse(args);
     REQUIRE(std::holds_alternative<ShowUndoneTasks>(command));
 }
 
