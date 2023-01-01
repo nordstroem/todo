@@ -17,7 +17,7 @@ public:
     Database() = default;
     /**
      * Constructs a database that is linked to a binary database file
-     * @param file the path to the database file 
+     * @param file the path to the database file
      */
     explicit Database(std::string_view file);
     /// Destructs the database, and updates the linked database file
@@ -32,7 +32,7 @@ public:
      * @param task task to add
      * @param date date to be added
      */
-    void add(Task task, const Date& date);
+    uint32_t add(Task task, const Date& date);
     /**
      * Removes a task with a specific hash from the database
      * @param hash hash of the task
@@ -65,7 +65,7 @@ public:
     /**
      * Returns all tasks that are not done
      * @return vector containing the undone tasks together with their associated date
-     * @remark this vector is sorted by from earliest date to latest date. Within the same date, 
+     * @remark this vector is sorted by from earliest date to latest date. Within the same date,
      * the tasks are sorted from highest to lowest priority
      */
     std::vector<std::pair<Date, HashedTask>> undone() const;

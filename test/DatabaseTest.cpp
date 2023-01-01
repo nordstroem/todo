@@ -57,6 +57,24 @@ TEST_CASE("check task")
     REQUIRE_FALSE(tasks.at(1).done);
 }
 
+TEST_CASE("at also returns unfinished older tasks")
+{
+    const Date firstDate = {.year = 2020, .month = 2, .day = 2};
+    const Date secondDate = {.year = 2020, .month = 2, .day = 3};
+    const Date thirdDate = {.year = 2020, .month = 2, .day = 4};
+    Database database;
+    const uint32_t firstHash = database.add({.description = "first task", .priority = 4}, firstDate);
+    const uint32_t secondHash = database.add({.description = "second task", .priority = 3}, secondDate);
+    const uint32_t thirdHash = database.add({.description = "third task", .priority = 1}, thirdDate);
+
+    database.check(secondHash);
+
+    const auto tasks = database.at(thirdDate);
+    REQUIRE(tasks.size() == 2);
+    REQUIRE(tasks.at(0).hash == firstHash);
+    REQUIRE(tasks.at(1).hash == thirdHash);
+}
+
 TEST_CASE("get task")
 {
     const Date date = {.year = 2020, .month = 2, .day = 2};

@@ -60,14 +60,16 @@ Database::~Database()
     }
 }
 
-void Database::add(Task task, const Date& date)
+uint32_t Database::add(Task task, const Date& date)
 {
     uint32_t largestHash = 0;
     for (const auto& [date, tasks] : _tasks)
         for (const auto& task : tasks)
             largestHash = std::max(largestHash, task.hash);
 
-    _tasks[date].emplace_back(std::move(task), largestHash + 1);
+    const uint32_t newHash = largestHash + 1;
+    _tasks[date].emplace_back(std::move(task), newHash);
+    return newHash;
 }
 
 void Database::remove(uint32_t hash)
@@ -103,12 +105,20 @@ std::optional<HashedTask> Database::get(uint32_t hash) const
 
 std::vector<HashedTask> Database::at(const Date& date) const
 {
+    std::vector<HashedTask> tasks;
+
     if (auto tasksAtDate = _tasks.find(date); tasksAtDate != _tasks.end()) {
-        auto tasks = tasksAtDate->second;
-        std::sort(tasks.begin(), tasks.end(), std::greater<>());
-        return tasks;
+        tasks.insert(tasks.end(), tasksAtDate->second.begin(), tasksAtDate->second.end());
     }
-    return {};
+
+    for (const auto& [undoneDate, undoneTask] : undone()) {
+        if (undoneDate < date) {
+            tasks.push_back(undoneTask);
+        }
+    }
+
+    std::sort(tasks.begin(), tasks.end(), std::greater<>());
+    return tasks;
 }
 
 std::vector<std::pair<Date, HashedTask>> Database::undone() const
