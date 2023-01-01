@@ -1,19 +1,21 @@
 #include "Database.hpp"
 #include <algorithm>
 #include <cereal/archives/binary.hpp>
+#include <cereal/types/optional.hpp>
 #include <cereal/types/string.hpp>
 #include <cereal/types/unordered_map.hpp>
 #include <cereal/types/vector.hpp>
 #include <fstream>
 #include <functional>
+#include <ranges>
 #include <spdlog/spdlog.h>
 
 namespace todo {
 
 template <class Archive>
-void serialize(Archive& archive, HashedTask& hashedTask)
+void serialize(Archive& archive, Task& task)
 {
-    archive(hashedTask.description, hashedTask.priority, hashedTask.hash, hashedTask.done);
+    archive(task.description, task.dueDate, task.priority, task.hash, task.addedDate, task.doneDate);
 }
 
 template <class Archive>
@@ -26,7 +28,7 @@ namespace {
 auto load(const std::string& file)
 {
     std::ifstream istream(file, std::ios::binary);
-    std::unordered_map<Date, std::vector<HashedTask>> input;
+    std::vector<Task> input;
     if (istream.good()) {
         cereal::BinaryInputArchive iarchive(istream);
         iarchive(input);
@@ -35,6 +37,7 @@ auto load(const std::string& file)
     }
     return input;
 }
+
 } // namespace
 
 Database::Database(std::string_view file)
@@ -60,83 +63,75 @@ Database::~Database()
     }
 }
 
-uint32_t Database::add(Task task, const Date& date)
+uint32_t Database::add(const std::string& description, const Date& dueDate, int priority)
 {
-    uint32_t largestHash = 0;
-    for (const auto& [date, tasks] : _tasks)
-        for (const auto& task : tasks)
-            largestHash = std::max(largestHash, task.hash);
-
-    const uint32_t newHash = largestHash + 1;
-    _tasks[date].emplace_back(std::move(task), newHash);
-    return newHash;
+    const Task task = {
+            .description = description,
+            .dueDate = dueDate,
+            .priority = priority,
+            .hash = nextHash()};
+    _tasks.emplace_back(task);
+    return _tasks.back().hash;
 }
 
 void Database::remove(uint32_t hash)
 {
-    for (auto& [date, tasks] : _tasks)
-        std::erase_if(tasks, [hash](const auto& t) { return t.hash == hash; });
+    std::erase_if(_tasks, [hash](const auto& t) { return t.hash == hash; });
 }
 
 void Database::check(uint32_t hash)
 {
-    for (auto& [date, tasks] : _tasks)
-        if (auto task = std::ranges::find_if(tasks, [hash](const auto& t) { return t.hash == hash; }); task != tasks.end())
-            task->done = !task->done;
+    if (auto task = std::ranges::find_if(_tasks, [hash](const auto& t) { return t.hash == hash; }); task != _tasks.end()) {
+        task->doneDate = task->done() ? std::nullopt : std::optional<Date>(Date::today());
+    }
 }
 
 void Database::move(uint32_t hash, const Date& date)
 {
-    for (auto& [currentDate, tasks] : _tasks)
-        if (auto task = std::ranges::find_if(tasks, [hash](const auto& t) { return t.hash == hash; }); task != tasks.end()) {
-            _tasks[date].push_back(*task);
-            tasks.erase(task);
-            break;
-        }
+    if (auto task = std::ranges::find_if(_tasks, [hash](const auto& t) { return t.hash == hash; }); task != _tasks.end()) {
+        task->dueDate = date;
+    }
 }
 
-std::optional<HashedTask> Database::get(uint32_t hash) const
+std::optional<Task> Database::get(uint32_t hash) const
 {
-    for (const auto& [date, tasks] : _tasks)
-        if (auto task = std::ranges::find_if(tasks, [hash](const auto& t) { return t.hash == hash; }); task != tasks.end())
-            return *task;
+    if (auto task = std::ranges::find_if(_tasks, [hash](const auto& t) { return t.hash == hash; }); task != _tasks.end())
+        return *task;
     return std::nullopt;
 }
 
-std::vector<HashedTask> Database::at(const Date& date) const
+std::vector<Task> Database::at(const Date& date) const
 {
-    std::vector<HashedTask> tasks;
+    const auto predicate = [&date](const auto& t) {
+        return t.dueDate == date || (t.dueDate < date && !t.done() && date <= Date::today());
+    };
 
-    if (auto tasksAtDate = _tasks.find(date); tasksAtDate != _tasks.end()) {
-        tasks.insert(tasks.end(), tasksAtDate->second.begin(), tasksAtDate->second.end());
+    std::vector<Task> tasks;
+    for (const auto& task : _tasks | std::views::filter(predicate)) {
+        tasks.push_back(task);
     }
-
-    for (const auto& [undoneDate, undoneTask] : undone()) {
-        if (undoneDate < date) {
-            tasks.push_back(undoneTask);
-        }
-    }
-
-    std::sort(tasks.begin(), tasks.end(), std::greater<>());
+    std::ranges::sort(tasks, [](const auto& a, const auto& b) { return a.priority > b.priority; });
     return tasks;
 }
 
-std::vector<std::pair<Date, HashedTask>> Database::undone() const
+std::vector<Task> Database::undone() const
 {
-    std::vector<std::pair<Date, HashedTask>> undoneTasks;
-    for (const auto& [date, tasks] : _tasks) {
-        for (const auto& task : tasks) {
-            if (!task.done)
-                undoneTasks.emplace_back(date, task);
-        }
+    const auto predicate = [](const auto& t) { return !t.done(); };
+
+    std::vector<Task> tasks;
+    for (const auto& task : _tasks | std::views::filter(predicate)) {
+        tasks.push_back(task);
     }
-    auto compare = [](const auto& a, const auto& b) {
-        if (a.first != b.first)
-            return a.first < b.first;
-        return a.second.priority > b.second.priority;
-    };
-    std::sort(undoneTasks.begin(), undoneTasks.end(), compare);
-    return undoneTasks;
+    std::ranges::sort(tasks, [](const auto& a, const auto& b) { return a.priority > b.priority; });
+    return tasks;
+}
+
+uint32_t Database::nextHash() const
+{
+    if (_tasks.empty()) {
+        return 0;
+    }
+    return std::ranges::max(_tasks | std::views::transform([](const auto& t) { return t.hash; })) + 1;
 }
 
 } // namespace todo

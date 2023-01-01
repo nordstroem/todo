@@ -32,7 +32,7 @@ public:
      * @param task task to add
      * @param date date to be added
      */
-    uint32_t add(Task task, const Date& date);
+    uint32_t add(const std::string& description, const Date& dueDate, int priority);
     /**
      * Removes a task with a specific hash from the database
      * @param hash hash of the task
@@ -54,25 +54,27 @@ public:
      * @param hash hash of the task
      * @return the task if it exists, std::nullopt otherwise
      */
-    std::optional<HashedTask> get(uint32_t hash) const;
+    std::optional<Task> get(uint32_t hash) const;
     /**
      * Returns all tasks at a specific date
      * @param date the date
      * @return the tasks
      * @remark this vector is sorted from highest to lowest task priority
      */
-    std::vector<HashedTask> at(const Date& date) const;
+    std::vector<Task> at(const Date& date) const;
     /**
      * Returns all tasks that are not done
      * @return vector containing the undone tasks together with their associated date
      * @remark this vector is sorted by from earliest date to latest date. Within the same date,
      * the tasks are sorted from highest to lowest priority
      */
-    std::vector<std::pair<Date, HashedTask>> undone() const;
+    std::vector<Task> undone() const;
 
 private:
+    uint32_t nextHash() const;
+
     std::optional<std::string> _file;
-    std::unordered_map<Date, std::vector<HashedTask>> _tasks;
+    std::vector<Task> _tasks;
 };
 
 } // namespace todo

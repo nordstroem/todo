@@ -66,7 +66,7 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
         print("To do at {}:\n\n", cmd.date.toString());
         print(rowFormat, header[0], hashPadding, header[1], taskPadding, header[2], prioPadding, header[3]);
         for (const auto& task : tasks) {
-            auto checked = task.done ? format(fg(color::green), "V") : format(" ");
+            auto checked = task.done() ? format(fg(color::green), "V") : format(" ");
             print(rowFormat, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, task.priority, prioPadding, format("[{}]", checked));
         }
     } else {
@@ -80,16 +80,16 @@ void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowUndoneTasks&& cmd) 
     if (!undone.empty()) {
         const MaxLengthHelper maxLength(undone);
         constexpr std::array<std::string_view, 5> header = {"Date", "Hash", "Task", "Priority"};
-        const auto datePadding = std::max(maxLength([](const auto& e) { return format("{}", e.first.toString()); }), header[0].length());
-        const auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.second.hash); }), header[1].length());
-        const auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.second.description); }), header[2].length());
-        const auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.second.priority); }), header[3].length());
+        const auto datePadding = std::max(maxLength([](const auto& e) { return format("{}", e.dueDate.toString()); }), header[0].length());
+        const auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.hash); }), header[1].length());
+        const auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.description); }), header[2].length());
+        const auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.priority); }), header[3].length());
 
         print("Undone tasks:\n");
         constexpr auto rowFormat = "{:<{}}  {:<{}}  {:<{}}  {:<{}}\n";
         print(rowFormat, header[0], datePadding, header[1], hashPadding, header[2], taskPadding, header[3], prioPadding, header[4]);
-        for (const auto& [date, task] : undone) {
-            print(rowFormat, date.toString(), datePadding, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, task.priority, prioPadding);
+        for (const auto& task : undone) {
+            print(rowFormat, task.dueDate.toString(), datePadding, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, task.priority, prioPadding);
         }
     } else {
         print("No undone tasks\n");
@@ -99,7 +99,7 @@ void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowUndoneTasks&& cmd) 
 void DatabaseCommandVisitor::operator()(AddTask&& cmd)
 {
     print("Added \"{}\" to do at {}\n", cmd.task.description, cmd.date.toString());
-    _database.add(std::move(cmd.task), cmd.date);
+    _database.add(cmd.task.description, cmd.date, cmd.task.priority);
 }
 
 void DatabaseCommandVisitor::operator()(RemoveTask&& cmd)
@@ -113,7 +113,7 @@ void DatabaseCommandVisitor::operator()(RemoveTask&& cmd)
 void DatabaseCommandVisitor::operator()(CheckTask&& cmd)
 {
     if (auto task = _database.get(cmd.hash)) {
-        const auto* checkMessage = task->done ? "not done" : "done";
+        const auto* checkMessage = task->done() ? "not done" : "done";
         print("Marked task \"{}\" as {}\n", task->description, checkMessage);
         _database.check(cmd.hash);
     }

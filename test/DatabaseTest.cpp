@@ -10,7 +10,7 @@ TEST_CASE("add and at")
 {
     const Date date = {.year = 2020, .month = 1, .day = 1};
     Database database;
-    database.add({.description = "sample task", .priority = 1}, date);
+    database.add("sample task", date, 1);
 
     auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
@@ -24,20 +24,20 @@ TEST_CASE("sorted")
 {
     const Date date = {.year = 2020, .month = 1, .day = 1};
     Database database;
-    database.add({.description = "low prio", .priority = 1}, date);
-    database.add({.description = "high prio", .priority = 10}, date);
-    database.add({.description = "medium prio", .priority = 5}, date);
+    database.add("low prio", date, 1);
+    database.add("high prio", date, 10);
+    database.add("medium prio", date, 5);
 
     auto tasks = database.at(date);
-    REQUIRE(std::is_sorted(tasks.begin(), tasks.end(), std::greater<>()));
+    REQUIRE(std::is_sorted(tasks.begin(), tasks.end(), [](const auto& a, const auto& b) { return a.priority > b.priority; }));
 }
 
 TEST_CASE("remove task")
 {
     const Date date = {.year = 2020, .month = 2, .day = 2};
     Database database;
-    database.add({.description = "some task", .priority = 1}, date);
-    database.add({.description = "some other task", .priority = 2}, date);
+    database.add("some task", date, 1);
+    database.add("some other task", date, 2);
     database.remove(database.at(date).at(0).hash);
     auto tasks = database.at(date);
     REQUIRE(tasks.size() == 1);
@@ -48,13 +48,26 @@ TEST_CASE("check task")
 {
     const Date date = {.year = 2020, .month = 2, .day = 2};
     Database database;
-    database.add({.description = "some task", .priority = 1}, date);
-    database.add({.description = "some other task", .priority = 2}, date);
+    database.add("some task", date, 1);
+    database.add("some other task", date, 2);
     database.check(database.at(date).front().hash);
     auto tasks = database.at(date);
     REQUIRE(tasks.front().description == "some other task");
-    REQUIRE(tasks.front().done);
-    REQUIRE_FALSE(tasks.at(1).done);
+    REQUIRE(tasks.front().done());
+    REQUIRE_FALSE(tasks.at(1).done());
+}
+
+TEST_CASE("check task on other")
+{
+    const Date date = {.year = 2020, .month = 2, .day = 2};
+    Database database;
+    database.add("some task", date, 1);
+    database.add("some other task", date, 2);
+    database.check(database.at(date).front().hash);
+    auto tasks = database.at(date);
+    REQUIRE(tasks.front().description == "some other task");
+    REQUIRE(tasks.front().done());
+    REQUIRE_FALSE(tasks.at(1).done());
 }
 
 TEST_CASE("at also returns unfinished older tasks")
@@ -63,9 +76,9 @@ TEST_CASE("at also returns unfinished older tasks")
     const Date secondDate = {.year = 2020, .month = 2, .day = 3};
     const Date thirdDate = {.year = 2020, .month = 2, .day = 4};
     Database database;
-    const uint32_t firstHash = database.add({.description = "first task", .priority = 4}, firstDate);
-    const uint32_t secondHash = database.add({.description = "second task", .priority = 3}, secondDate);
-    const uint32_t thirdHash = database.add({.description = "third task", .priority = 1}, thirdDate);
+    const uint32_t firstHash = database.add("first task", firstDate, 4);
+    const uint32_t secondHash = database.add("second task", secondDate, 3);
+    const uint32_t thirdHash = database.add("third task", thirdDate, 1);
 
     database.check(secondHash);
 
@@ -79,7 +92,7 @@ TEST_CASE("get task")
 {
     const Date date = {.year = 2020, .month = 2, .day = 2};
     Database database;
-    database.add({.description = "some task", .priority = 1}, date);
+    database.add("some task", date, 1);
     auto tasks = database.at(date);
 
     REQUIRE(database.get(tasks.front().hash)->description == "some task");
@@ -91,18 +104,18 @@ TEST_CASE("get undone tasks")
     const Date firstDate = {.year = 2020, .month = 2, .day = 1};
     const Date secondDate = {.year = 2020, .month = 2, .day = 2};
     Database database;
-    database.add({.description = "first task", .priority = 3}, firstDate);
+    database.add("first task", firstDate, 3);
     const uint32_t firstHash = database.at(firstDate).front().hash;
     database.check(firstHash);
-    database.add({.description = "second task", .priority = 5}, firstDate);
-    database.add({.description = "third task", .priority = 3}, secondDate);
-    database.add({.description = "fourth task", .priority = 4}, secondDate);
+    database.add("second task", firstDate, 5);
+    database.add("third task", secondDate, 3);
+    database.add("fourth task", secondDate, 4);
 
     const auto undone = database.undone();
     REQUIRE(undone.size() == 3);
-    REQUIRE(undone.at(0).second.description == "second task");
-    REQUIRE(undone.at(1).second.description == "fourth task");
-    REQUIRE(undone.at(2).second.description == "third task");
+    REQUIRE(undone.at(0).description == "second task");
+    REQUIRE(undone.at(1).description == "fourth task");
+    REQUIRE(undone.at(2).description == "third task");
 }
 
 TEST_CASE("move task")
@@ -110,7 +123,7 @@ TEST_CASE("move task")
     const Date initialDate = {.year = 2020, .month = 2, .day = 2};
     const Date newDate = {.year = 2020, .month = 2, .day = 3};
     Database database;
-    database.add({.description = "some task", .priority = 1}, initialDate);
+    database.add("some task", initialDate, 1);
     const uint32_t hash = database.at(initialDate).front().hash;
     database.move(hash, newDate);
     REQUIRE(database.at(initialDate).empty());
@@ -126,7 +139,7 @@ TEST_CASE("input file")
     const Date date = {.year = 2022, .month = 3, .day = 4};
     {
         Database database(path.c_str());
-        database.add({.description = "test task"}, date);
+        database.add("test task", date, 0);
     }
     auto database = Database(path.c_str());
 

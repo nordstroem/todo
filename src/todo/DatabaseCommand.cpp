@@ -33,7 +33,7 @@ DatabaseCommand parse(std::span<const char*> args)
             return ShowMessage{.message = fmt::format("{} is not a valid date", date.toString())};
 
         if (result.count("add") != 0) {
-            Task task = Task{.description = result["add"].as<std::string>(), .priority = result["priority"].as<int>()};
+            Task task = Task{.description = result["add"].as<std::string>(), .dueDate = date, .priority = result["priority"].as<int>()};
             return AddTask{.task = std::move(task), .date = date};
         }
 
