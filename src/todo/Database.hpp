@@ -1,10 +1,10 @@
 #pragma once
 #include "Date.hpp"
 #include "Task.hpp"
+#include <functional>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -32,7 +32,7 @@ public:
      * @param task task to add
      * @param date date to be added
      */
-    uint32_t add(const std::string& description, const Date& dueDate, int priority);
+    void add(const std::string& description, const Date& dueDate, int priority);
     /**
      * Removes a task with a specific hash from the database
      * @param hash hash of the task
@@ -56,12 +56,18 @@ public:
      */
     std::optional<Task> get(uint32_t hash) const;
     /**
-     * Returns all tasks at a specific date
+     * Returns all tasks with a specific due date
      * @param date the date
      * @return the tasks
      * @remark this vector is sorted from highest to lowest task priority
      */
-    std::vector<Task> at(const Date& date) const;
+    std::vector<Task> withDueDate(const Date& date) const;
+    /**
+     * Returns all tasks with a specific done date
+     * @param date the date
+     * @return the tasks
+     */
+    std::vector<Task> withDoneDate(const Date& date) const;
     /**
      * Returns all tasks that are not done
      * @return vector containing the undone tasks together with their associated date
@@ -70,8 +76,11 @@ public:
      */
     std::vector<Task> undone() const;
 
+    std::vector<Task> undoneUpToDueDate(const Date& date) const;
+
 private:
     uint32_t nextHash() const;
+    std::vector<Task> query(const std::function<bool(const Task&)>& predicate) const;
 
     std::optional<std::string> _file;
     std::vector<Task> _tasks;

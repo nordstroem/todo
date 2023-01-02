@@ -63,7 +63,7 @@ Database::~Database()
     }
 }
 
-uint32_t Database::add(const std::string& description, const Date& dueDate, int priority)
+void Database::add(const std::string& description, const Date& dueDate, int priority)
 {
     const Task task = {
             .description = description,
@@ -71,7 +71,6 @@ uint32_t Database::add(const std::string& description, const Date& dueDate, int 
             .priority = priority,
             .hash = nextHash()};
     _tasks.emplace_back(task);
-    return _tasks.back().hash;
 }
 
 void Database::remove(uint32_t hash)
@@ -100,30 +99,28 @@ std::optional<Task> Database::get(uint32_t hash) const
     return std::nullopt;
 }
 
-std::vector<Task> Database::at(const Date& date) const
+std::vector<Task> Database::withDueDate(const Date& date) const
 {
-    const auto predicate = [&date](const auto& t) {
-        return t.dueDate == date || (t.dueDate < date && !t.done() && date <= Date::today());
-    };
+    const auto predicate = [&date](const auto& t) { return t.dueDate == date; };
+    return query(predicate);
+}
 
-    std::vector<Task> tasks;
-    for (const auto& task : _tasks | std::views::filter(predicate)) {
-        tasks.push_back(task);
-    }
-    std::ranges::sort(tasks, [](const auto& a, const auto& b) { return a.priority > b.priority; });
-    return tasks;
+std::vector<Task> Database::withDoneDate(const Date& date) const
+{
+    const auto predicate = [&date](const auto& t) { return t.doneDate == date; };
+    return query(predicate);
 }
 
 std::vector<Task> Database::undone() const
 {
     const auto predicate = [](const auto& t) { return !t.done(); };
+    return query(predicate);
+}
 
-    std::vector<Task> tasks;
-    for (const auto& task : _tasks | std::views::filter(predicate)) {
-        tasks.push_back(task);
-    }
-    std::ranges::sort(tasks, [](const auto& a, const auto& b) { return a.priority > b.priority; });
-    return tasks;
+std::vector<Task> Database::undoneUpToDueDate(const Date& date) const
+{
+    const auto predicate = [&date](const auto& t) { return !t.done() && t.dueDate <= date; };
+    return query(predicate);
 }
 
 uint32_t Database::nextHash() const
@@ -132,6 +129,16 @@ uint32_t Database::nextHash() const
         return 0;
     }
     return std::ranges::max(_tasks | std::views::transform([](const auto& t) { return t.hash; })) + 1;
+}
+
+std::vector<Task> Database::query(const std::function<bool(const Task&)>& predicate) const
+{
+    std::vector<Task> tasks;
+    for (const auto& task : _tasks | std::views::filter(predicate)) {
+        tasks.push_back(task);
+    }
+    std::ranges::sort(tasks, [](const auto& a, const auto& b) { return a.priority > b.priority; });
+    return tasks;
 }
 
 } // namespace todo

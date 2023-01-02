@@ -43,7 +43,7 @@ private:
 namespace todo {
 
 DatabaseCommandVisitor::DatabaseCommandVisitor(std::string_view databasePath)
-    : _database(Database(databasePath))
+    : _database(databasePath)
 {
 }
 
@@ -54,7 +54,12 @@ void DatabaseCommandVisitor::operator()(ShowMessage&& cmd) const
 
 void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 {
-    const auto& tasks = _database.at(cmd.date);
+    const auto undoneTasks = _database.undoneUpToDueDate(cmd.date);
+    const auto doneTasks = _database.withDoneDate(Date::today());
+    std::vector<Task> tasks;
+    std::copy(undoneTasks.begin(), undoneTasks.end(), std::back_inserter(tasks));
+    std::copy(doneTasks.begin(), doneTasks.end(), std::back_inserter(tasks));
+
     if (!tasks.empty()) {
         const MaxLengthHelper maxLength(tasks);
         constexpr std::array<std::string_view, 4> header = {"Hash", "Task", "Priority", "Done"};
@@ -82,7 +87,7 @@ void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowUndoneTasks&& cmd) 
         constexpr std::array<std::string_view, 5> header = {"Date", "Hash", "Task", "Priority"};
         const auto datePadding = std::max(maxLength([](const auto& e) { return format("{}", e.dueDate.toString()); }), header[0].length());
         const auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.hash); }), header[1].length());
-        const auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.description); }), header[2].length());
+        const auto taskPadding = std::max(maxLength([](const auto& e) { return format("{}", e.description); }), header[2].length());
         const auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.priority); }), header[3].length());
 
         print("Undone tasks:\n");

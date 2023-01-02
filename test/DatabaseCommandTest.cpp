@@ -68,11 +68,11 @@ TEST_CASE("apply add task command")
 {
     const auto date = Date::fromString("2012-12-12");
     DatabaseCommandVisitor visitor;
-    DatabaseCommand command = AddTask{.task = {"task to do"}, .date = date};
+    DatabaseCommand command = AddTask{.task = {.description = "task to do", .dueDate = date}, .date = date}; // @todo remove date from AddTask
     std::visit(visitor, std::move(command));
 
     const auto& database = visitor.database();
-    const auto tasks = database.at(date);
+    const auto tasks = database.withDueDate(date);
     REQUIRE(tasks.size() == 1);
     REQUIRE(tasks.front().description == "task to do");
 }

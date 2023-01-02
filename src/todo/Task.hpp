@@ -13,6 +13,7 @@ struct Task
     uint32_t hash = 0;
     Date addedDate = Date::today();
     std::optional<Date> doneDate = std::nullopt;
+
     bool done() const { return doneDate.has_value(); }
 };
 
