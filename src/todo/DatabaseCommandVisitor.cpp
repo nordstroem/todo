@@ -55,24 +55,26 @@ void DatabaseCommandVisitor::operator()(ShowMessage&& cmd) const
 void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
 {
     const auto undoneTasks = _database.undoneUpToDueDate(cmd.date);
-    const auto doneTasks = _database.withDoneDate(Date::today());
+    const auto doneTasks = _database.withDoneDate(cmd.date);
     std::vector<Task> tasks;
     std::copy(undoneTasks.begin(), undoneTasks.end(), std::back_inserter(tasks));
     std::copy(doneTasks.begin(), doneTasks.end(), std::back_inserter(tasks));
 
     if (!tasks.empty()) {
         const MaxLengthHelper maxLength(tasks);
-        constexpr std::array<std::string_view, 4> header = {"Hash", "Task", "Priority", "Done"};
+        constexpr std::array<std::string_view, 5> header = {"Hash", "Task", "Priority", "Due date", "Done"};
         const auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.hash); }), header[0].length());
         const auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.description); }), header[1].length());
-        const auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.priority); }), header[2].length());
+        const auto dueDatePadding = std::max(maxLength([](const auto& e) { return format("{}", e.dueDate.toString()); }), header[2].length());
+        const auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.priority); }), header[3].length());
 
-        constexpr auto rowFormat = "{:<{}}  {:<{}}  {:<{}}  {}\n";
-        print("To do at {}:\n\n", cmd.date.toString());
-        print(rowFormat, header[0], hashPadding, header[1], taskPadding, header[2], prioPadding, header[3]);
+        constexpr auto rowFormat = "{:<{}}  {:<{}}  {:<{}}  {:<{}}  {}\n";
+        print(rowFormat, header[0], hashPadding, header[1], taskPadding, header[2], dueDatePadding, header[3], prioPadding, header[4]);
         for (const auto& task : tasks) {
             auto checked = task.done() ? format(fg(color::green), "V") : format(" ");
-            print(rowFormat, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, task.priority, prioPadding, format("[{}]", checked));
+            auto dueDate = task.dueDate < cmd.date && !task.done() ? format(fg(color::red), task.dueDate.toString()) : task.dueDate.toString();
+
+            print(rowFormat, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, task.priority, prioPadding, dueDate, dueDatePadding, format("[{}]", checked));
         }
     } else {
         print("Nothing to do {}\n", cmd.date == Date::today() ? format("today") : format("at {}", cmd.date.toString()));
