@@ -1,22 +1,24 @@
 #include "DatabaseCommand.hpp"
-#include <cxxopts.hpp>
 #include <fmt/core.h>
+#include <magic_enum.hpp>
+using namespace magic_enum::istream_operators;
+#include <cxxopts.hpp>
 
 namespace todo {
 
 DatabaseCommand parse(std::span<const char*> args)
 {
     cxxopts::Options options("todo", "todo");
-    options.add_options()                                                                              //
-            ("h,help", "Print usage")                                                                  //
-            ("a,add", "Task to add", cxxopts::value<std::string>())                                    //
-            ("p,priority", "Priority of added task", cxxopts::value<int>()->default_value("0"))        //
-            ("r,remove", "Hash of task to remove", cxxopts::value<uint32_t>())                         //
-            ("c,check", "Check a task with a specific hash", cxxopts::value<uint32_t>())               //
-            ("m,move", "Move a task with a specific hash to another date", cxxopts::value<uint32_t>()) //
-            ("s,show", "Show tasks at a specific date")                                                //
-            ("u,show_undone", "Show all undone tasks")                                                 //
-            ("d,date", "Date to add or query", cxxopts::value<std::string>()->default_value("today")); //
+    options.add_options()                                                                                 //
+            ("h,help", "Print usage")                                                                     //
+            ("a,add", "Task to add", cxxopts::value<std::string>())                                       //
+            ("p,priority", "Priority of added task", cxxopts::value<Priority>()->default_value("Medium")) //
+            ("r,remove", "Hash of task to remove", cxxopts::value<uint32_t>())                            //
+            ("c,check", "Check a task with a specific hash", cxxopts::value<uint32_t>())                  //
+            ("m,move", "Move a task with a specific hash to another date", cxxopts::value<uint32_t>())    //
+            ("s,show", "Show tasks at a specific date")                                                   //
+            ("u,show_undone", "Show all undone tasks")                                                    //
+            ("d,date", "Date to add or query", cxxopts::value<std::string>()->default_value("today"));    //
     options.parse_positional({"date"});
     options.positional_help("Date");
     options.show_positional_help();
@@ -33,7 +35,7 @@ DatabaseCommand parse(std::span<const char*> args)
             return ShowMessage{.message = fmt::format("{} is not a valid date", date.toString())};
 
         if (result.count("add") != 0) {
-            Task task = Task{.description = result["add"].as<std::string>(), .dueDate = date, .priority = result["priority"].as<int>()};
+            Task task = Task{.description = result["add"].as<std::string>(), .dueDate = date, .priority = result["priority"].as<Priority>()};
             return AddTask{.task = std::move(task), .date = date};
         }
 

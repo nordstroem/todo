@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <fmt/color.h>
 #include <fmt/core.h>
+#include <magic_enum.hpp>
 #include <ranges>
 #include <string_view>
 
@@ -66,15 +67,16 @@ void DatabaseCommandVisitor::operator()(ShowTasks&& cmd) const
         const auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.hash); }), header[0].length());
         const auto taskPadding = std::max(maxLength([](const auto& e) { return format("\"{}\"", e.description); }), header[1].length());
         const auto dueDatePadding = std::max(maxLength([](const auto& e) { return format("{}", e.dueDate.toString()); }), header[2].length());
-        const auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.priority); }), header[3].length());
+        const auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", magic_enum::enum_name(e.priority)); }), header[3].length());
 
         constexpr auto rowFormat = "{:<{}}  {:<{}}  {:<{}}  {:<{}}  {}\n";
-        print(rowFormat, header[0], hashPadding, header[1], taskPadding, header[2], dueDatePadding, header[3], prioPadding, header[4]);
+        const std::string titleRow = format(rowFormat, header[0], hashPadding, header[1], taskPadding, header[2], dueDatePadding, header[3], prioPadding, header[4]);
+        print("{}", titleRow);
+        print("{:->{}}\n", "", titleRow.size() - 1);
         for (const auto& task : tasks) {
             auto checked = task.done() ? format(fg(color::green), "V") : format(" ");
             auto dueDate = task.dueDate < cmd.date && !task.done() ? format(fg(color::red), task.dueDate.toString()) : task.dueDate.toString();
-
-            print(rowFormat, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, task.priority, prioPadding, dueDate, dueDatePadding, format("[{}]", checked));
+            print(rowFormat, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, magic_enum::enum_name(task.priority), prioPadding, dueDate, dueDatePadding, format("[{}]", checked));
         }
     } else {
         print("Nothing to do {}\n", cmd.date == Date::today() ? format("today") : format("at {}", cmd.date.toString()));
@@ -90,13 +92,13 @@ void DatabaseCommandVisitor::operator()([[maybe_unused]] ShowUndoneTasks&& cmd) 
         const auto datePadding = std::max(maxLength([](const auto& e) { return format("{}", e.dueDate.toString()); }), header[0].length());
         const auto hashPadding = std::max(maxLength([](const auto& e) { return format("{}", e.hash); }), header[1].length());
         const auto taskPadding = std::max(maxLength([](const auto& e) { return format("{}", e.description); }), header[2].length());
-        const auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", e.priority); }), header[3].length());
+        const auto prioPadding = std::max(maxLength([](const auto& e) { return format("{}", magic_enum::enum_name(e.priority)); }), header[3].length());
 
         print("Undone tasks:\n");
         constexpr auto rowFormat = "{:<{}}  {:<{}}  {:<{}}  {:<{}}\n";
         print(rowFormat, header[0], datePadding, header[1], hashPadding, header[2], taskPadding, header[3], prioPadding, header[4]);
         for (const auto& task : undone) {
-            print(rowFormat, task.dueDate.toString(), datePadding, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, task.priority, prioPadding);
+            print(rowFormat, task.dueDate.toString(), datePadding, task.hash, hashPadding, format("\"{}\"", task.description), taskPadding, magic_enum::enum_name(task.priority), prioPadding);
         }
     } else {
         print("No undone tasks\n");

@@ -63,7 +63,7 @@ Database::~Database()
     }
 }
 
-void Database::add(const std::string& description, const Date& dueDate, int priority)
+void Database::add(const std::string& description, const Date& dueDate, Priority priority)
 {
     const Task task = {
             .description = description,

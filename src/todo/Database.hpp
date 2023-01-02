@@ -29,10 +29,8 @@ public:
     Database& operator=(Database&& other) = delete;
     /**
      * Adds a task to do at a specific date to the database
-     * @param task task to add
-     * @param date date to be added
      */
-    void add(const std::string& description, const Date& dueDate, int priority);
+    void add(const std::string& description, const Date& dueDate, Priority priority);
     /**
      * Removes a task with a specific hash from the database
      * @param hash hash of the task

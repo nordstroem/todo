@@ -5,11 +5,18 @@
 
 namespace todo {
 
+enum class Priority
+{
+    Low,
+    Medium,
+    High
+};
+
 struct Task
 {
     std::string description;
     Date dueDate;
-    int32_t priority = 0;
+    Priority priority = Priority::Medium;
     uint32_t hash = 0;
     Date addedDate = Date::today();
     std::optional<Date> doneDate = std::nullopt;
