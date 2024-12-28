@@ -136,10 +136,10 @@ TEST_CASE("input file")
 
     const Date date = {.year = 2022, .month = 3, .day = 4};
     {
-        Database database(path.c_str());
+        Database database(path.string().c_str());
         database.add("test task", date, Priority::Medium);
     }
-    auto database = Database(path.c_str());
+    auto database = Database(path.string().c_str());
 
     const auto tasks = database.withDueDate(date);
     REQUIRE(tasks.size() == 1);

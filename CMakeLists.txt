@@ -21,18 +21,27 @@ if (TODO_USE_CLANG_TIDY)
     endif()
 endif()
 
-add_compile_options("-Wall" "-Wextra" "-Wpedantic")
+if(WIN32)
+    add_definitions(-D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS)
+endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     add_compile_options ("-fdiagnostics-color=always")
+    add_compile_options("-Wall" "-Wextra" "-Wpedantic")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     add_compile_options ("-fcolor-diagnostics")
+    add_compile_options("-Wall" "-Wextra" "-Wpedantic")
 endif ()
 
 set(SPDLOG_FMT_EXTERNAL ON)
-set(CONAN_SYSTEM_INCLUDES ON)
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+
+find_package(cereal)
+find_package(cxxopts)
+find_package(date)
+find_package(doctest)
+find_package(spdlog)
+find_package(fmt)
+find_package(magic_enum)
 
 add_library(todolib)
 target_include_directories(todolib PUBLIC "src/todo")
@@ -43,7 +52,7 @@ endif()
 
 add_subdirectory("src/todo")
 
-target_link_libraries(todolib PUBLIC ${CONAN_LIBS})
+target_link_libraries(todolib PUBLIC cereal::cereal cxxopts::cxxopts date::date doctest::doctest spdlog::spdlog fmt::fmt magic_enum::magic_enum)
 
 add_executable(todo "src/main.cpp")
 target_link_libraries(todo PRIVATE todolib)
